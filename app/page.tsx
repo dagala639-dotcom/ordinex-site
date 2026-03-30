@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 
 type BusinessType =
@@ -21,6 +21,18 @@ export default function HomePage() {
   const [quoteName, setQuoteName] = useState("");
   const [quoteEmail, setQuoteEmail] = useState("");
   const [quotePhone, setQuotePhone] = useState("");
+
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    function checkMobile() {
+      setIsMobile(window.innerWidth <= 768);
+    }
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   const showKitchenOption =
     businessType === "restaurant" ||
@@ -217,7 +229,12 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
         <div style={styles.heroGlowTwo} />
         <div style={styles.heroGrid} />
 
-        <nav style={styles.nav}>
+        <nav
+          style={{
+            ...styles.nav,
+            ...(isMobile ? styles.navMobile : {}),
+          }}
+        >
           <div style={styles.brandWrap}>
             <Image
               src="/logo/ordinex-logo.jpeg"
@@ -229,34 +246,52 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
             />
           </div>
 
-          <div style={styles.navLinks}>
-            <a href="#solutions" style={styles.navLink}>
-              Solutions
-            </a>
-            <a href="#showcase" style={styles.navLink}>
-              Product
-            </a>
-            <a href="#features" style={styles.navLink}>
-              Features
-            </a>
-            <a href="#calculator" style={styles.navLink}>
-              Pricing
-            </a>
-            <a href="#contact" style={styles.navLink}>
-              Contact
-            </a>
-          </div>
+          {!isMobile ? (
+            <div style={styles.navLinks}>
+              <a href="#solutions" style={styles.navLink}>
+                Solutions
+              </a>
+              <a href="#showcase" style={styles.navLink}>
+                Product
+              </a>
+              <a href="#features" style={styles.navLink}>
+                Features
+              </a>
+              <a href="#calculator" style={styles.navLink}>
+                Pricing
+              </a>
+              <a href="#contact" style={styles.navLink}>
+                Contact
+              </a>
+            </div>
+          ) : null}
 
-          <button style={styles.navButton} onClick={() => scrollToSection("contact")}>
+          <button
+            style={{
+              ...styles.navButton,
+              ...(isMobile ? styles.navButtonMobile : {}),
+            }}
+            onClick={() => scrollToSection("contact")}
+          >
             Request Demo
           </button>
         </nav>
 
-        <div style={styles.heroInner}>
+        <div
+          style={{
+            ...styles.heroInner,
+            ...(isMobile ? styles.heroInnerMobile : {}),
+          }}
+        >
           <div style={styles.heroCopy}>
             <div style={styles.heroPill}>Hospitality & Fuel Operations Platform</div>
 
-            <h1 style={styles.heroTitle}>
+            <h1
+              style={{
+                ...styles.heroTitle,
+                ...(isMobile ? styles.heroTitleMobile : {}),
+              }}
+            >
               Premium POS and operations software for fast-moving businesses.
             </h1>
 
@@ -282,7 +317,12 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
               </button>
             </div>
 
-            <div style={styles.heroStats}>
+            <div
+              style={{
+                ...styles.heroStats,
+                ...(isMobile ? styles.heroStatsMobile : {}),
+              }}
+            >
               <div style={styles.heroStatCard}>
                 <div style={styles.heroStatNumber}>Waiter</div>
                 <div style={styles.heroStatText}>Tablet-ready front-of-house flow</div>
@@ -363,9 +403,14 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
         </div>
       </section>
 
-      <section id="showcase" style={styles.section}>
+      <section style={styles.section} id="showcase">
         <div style={styles.sectionInnerWide}>
-          <div style={styles.sectionHeader}>
+          <div
+            style={{
+              ...styles.sectionHeader,
+              ...(isMobile ? styles.sectionHeaderMobile : {}),
+            }}
+          >
             <div>
               <div style={styles.sectionEyebrow}>Product Showcase</div>
               <h2 style={styles.sectionTitle}>See Ordinex in action</h2>
@@ -431,9 +476,14 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
         </div>
       </section>
 
-      <section id="solutions" style={styles.section}>
+      <section style={styles.section} id="solutions">
         <div style={styles.sectionInner}>
-          <div style={styles.sectionHeader}>
+          <div
+            style={{
+              ...styles.sectionHeader,
+              ...(isMobile ? styles.sectionHeaderMobile : {}),
+            }}
+          >
             <div>
               <div style={styles.sectionEyebrow}>Solutions</div>
               <h2 style={styles.sectionTitle}>Structured for real business models</h2>
@@ -444,10 +494,22 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
             </p>
           </div>
 
-          <div style={styles.solutionGrid}>
+          <div
+            style={{
+              ...styles.solutionGrid,
+              ...(isMobile ? styles.solutionGridMobile : {}),
+            }}
+          >
             <div style={styles.solutionCard}>
               <div style={styles.solutionBadge}>Restaurants & Cafés</div>
-              <h3 style={styles.solutionTitle}>Waiter to kitchen to cashier</h3>
+              <h3
+                style={{
+                  ...styles.solutionTitle,
+                  ...(isMobile ? styles.solutionTitleMobile : {}),
+                }}
+              >
+                Waiter to kitchen to cashier
+              </h3>
               <p style={styles.solutionText}>
                 Give waiters their own tablets, move orders to the kitchen
                 instantly, and keep payment confirmation under cashier control.
@@ -456,7 +518,14 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
 
             <div style={styles.solutionCard}>
               <div style={styles.solutionBadge}>Bars & Lounges</div>
-              <h3 style={styles.solutionTitle}>Tabs, VIP tables, and night control</h3>
+              <h3
+                style={{
+                  ...styles.solutionTitle,
+                  ...(isMobile ? styles.solutionTitleMobile : {}),
+                }}
+              >
+                Tabs, VIP tables, and night control
+              </h3>
               <p style={styles.solutionText}>
                 Manage open tabs, repeated drink orders, fast service, and
                 cashier-controlled payment flow during high-volume nights.
@@ -465,7 +534,14 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
 
             <div style={styles.solutionCard}>
               <div style={styles.solutionBadge}>Hotels & Hospitality</div>
-              <h3 style={styles.solutionTitle}>Connected service operations</h3>
+              <h3
+                style={{
+                  ...styles.solutionTitle,
+                  ...(isMobile ? styles.solutionTitleMobile : {}),
+                }}
+              >
+                Connected service operations
+              </h3>
               <p style={styles.solutionText}>
                 Coordinate service points, staff workflows, and reporting
                 visibility in one connected operational environment.
@@ -474,7 +550,14 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
 
             <div style={styles.solutionCard}>
               <div style={styles.solutionBadge}>Fuel Stations</div>
-              <h3 style={styles.solutionTitle}>Attendant to manager flow</h3>
+              <h3
+                style={{
+                  ...styles.solutionTitle,
+                  ...(isMobile ? styles.solutionTitleMobile : {}),
+                }}
+              >
+                Attendant to manager flow
+              </h3>
               <p style={styles.solutionText}>
                 Fuel attendants use their own tablet to record sales and payment
                 activity while managers monitor totals and performance live.
@@ -484,9 +567,14 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
         </div>
       </section>
 
-      <section id="features" style={styles.section}>
+      <section style={styles.section} id="features">
         <div style={styles.sectionInner}>
-          <div style={styles.sectionHeader}>
+          <div
+            style={{
+              ...styles.sectionHeader,
+              ...(isMobile ? styles.sectionHeaderMobile : {}),
+            }}
+          >
             <div>
               <div style={styles.sectionEyebrow}>Features</div>
               <h2 style={styles.sectionTitle}>A commercial-grade operations stack</h2>
@@ -497,7 +585,12 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
             </p>
           </div>
 
-          <div style={styles.featureColumns}>
+          <div
+            style={{
+              ...styles.featureColumns,
+              ...(isMobile ? styles.featureColumnsMobile : {}),
+            }}
+          >
             <div style={styles.featureColumn}>
               <div style={styles.featureGroupTitle}>Operations</div>
               <div style={styles.featureItem}>Multi-terminal system</div>
@@ -530,7 +623,12 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
 
       <section style={styles.section}>
         <div style={styles.sectionInner}>
-          <div style={styles.workflowBand}>
+          <div
+            style={{
+              ...styles.workflowBand,
+              ...(isMobile ? styles.workflowBandMobile : {}),
+            }}
+          >
             <div style={styles.workflowStep}>
               <div style={styles.workflowNumber}>01</div>
               <div style={styles.workflowStepTitle}>Capture activity</div>
@@ -566,9 +664,14 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
         </div>
       </section>
 
-      <section id="calculator" style={styles.section}>
+      <section style={styles.section} id="calculator">
         <div style={styles.sectionInner}>
-          <div style={styles.sectionHeader}>
+          <div
+            style={{
+              ...styles.sectionHeader,
+              ...(isMobile ? styles.sectionHeaderMobile : {}),
+            }}
+          >
             <div>
               <div style={styles.sectionEyebrow}>Pricing Estimator</div>
               <h2 style={styles.sectionTitle}>Build your Ordinex package</h2>
@@ -579,7 +682,12 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
             </p>
           </div>
 
-          <div style={styles.configurator}>
+          <div
+            style={{
+              ...styles.configurator,
+              ...(isMobile ? styles.configuratorMobile : {}),
+            }}
+          >
             <div style={styles.configuratorLeft}>
               <div style={styles.configCard}>
                 <label style={styles.configLabel}>Business Type</label>
@@ -603,7 +711,7 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
 
                 <label style={styles.configLabel}>Number of Staff Tablets</label>
                 <div style={styles.numberControl}>
-                  <button style={styles.numberButton} onClick={decreaseTablets}>
+                  <button type="button" style={styles.numberButton} onClick={decreaseTablets}>
                     -
                   </button>
                   <input
@@ -614,7 +722,7 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
                     onChange={(e) => handleTabletInputChange(e.target.value)}
                     style={styles.numberInput}
                   />
-                  <button style={styles.numberButton} onClick={increaseTablets}>
+                  <button type="button" style={styles.numberButton} onClick={increaseTablets}>
                     +
                   </button>
                 </div>
@@ -624,6 +732,7 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
                     <label style={styles.configLabel}>Kitchen Display</label>
                     <div style={styles.toggleRow}>
                       <button
+                        type="button"
                         style={{
                           ...styles.toggleButton,
                           ...(needsKitchenDisplay ? styles.toggleButtonActive : {}),
@@ -633,6 +742,7 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
                         Yes
                       </button>
                       <button
+                        type="button"
                         style={{
                           ...styles.toggleButton,
                           ...(!needsKitchenDisplay ? styles.toggleButtonActive : {}),
@@ -682,12 +792,14 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
 
                 <div style={styles.quoteActions}>
                   <button
+                    type="button"
                     style={styles.quotePrimaryButton}
                     onClick={() => setShowQuoteForm(true)}
                   >
                     Get Real Quote
                   </button>
                   <button
+                    type="button"
                     style={styles.quoteSecondaryButton}
                     onClick={() => scrollToSection("contact")}
                   >
@@ -700,7 +812,7 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
         </div>
       </section>
 
-      <section id="contact" style={styles.section}>
+      <section style={styles.section} id="contact">
         <div style={styles.sectionInner}>
           <div style={styles.contactShell}>
             <div style={styles.contactBadge}>Contact</div>
@@ -807,6 +919,11 @@ const styles: Record<string, React.CSSProperties> = {
     gap: 16,
     flexWrap: "wrap",
   },
+  navMobile: {
+    padding: "18px 16px",
+    gap: 12,
+    alignItems: "center",
+  },
   brandWrap: {
     display: "flex",
     alignItems: "center",
@@ -841,6 +958,9 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: 14,
     cursor: "pointer",
   },
+  navButtonMobile: {
+    width: "100%",
+  },
 
   heroInner: {
     position: "relative",
@@ -853,6 +973,11 @@ const styles: Record<string, React.CSSProperties> = {
     gap: 28,
     alignItems: "center",
     padding: "24px 20px 70px",
+  },
+  heroInnerMobile: {
+    gridTemplateColumns: "1fr",
+    padding: "18px 16px 50px",
+    gap: 24,
   },
   heroCopy: {
     maxWidth: 720,
@@ -876,6 +1001,11 @@ const styles: Record<string, React.CSSProperties> = {
     fontWeight: 800,
     color: "#ffffff",
     maxWidth: 820,
+  },
+  heroTitleMobile: {
+    fontSize: "42px",
+    lineHeight: 1.03,
+    letterSpacing: -1.5,
   },
   heroText: {
     margin: 0,
@@ -918,6 +1048,9 @@ const styles: Record<string, React.CSSProperties> = {
     display: "grid",
     gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
     gap: 14,
+  },
+  heroStatsMobile: {
+    gridTemplateColumns: "1fr",
   },
   heroStatCard: {
     background: "rgba(11, 18, 42, 0.72)",
@@ -1024,6 +1157,10 @@ const styles: Record<string, React.CSSProperties> = {
     flexWrap: "wrap",
     marginBottom: 28,
   },
+  sectionHeaderMobile: {
+    alignItems: "start",
+    gap: 14,
+  },
   sectionEyebrow: {
     color: "#8fb1ff",
     fontSize: 13,
@@ -1108,6 +1245,9 @@ const styles: Record<string, React.CSSProperties> = {
     gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
     gap: 18,
   },
+  solutionGridMobile: {
+    gridTemplateColumns: "1fr",
+  },
   solutionCard: {
     background: "linear-gradient(180deg, rgba(10,17,40,0.96), rgba(7,13,30,0.96))",
     border: "1px solid rgba(92, 123, 255, 0.16)",
@@ -1135,6 +1275,11 @@ const styles: Record<string, React.CSSProperties> = {
     lineHeight: 1.12,
     fontWeight: 800,
   },
+  solutionTitleMobile: {
+    fontSize: 34,
+    lineHeight: 1.04,
+    letterSpacing: -1,
+  },
   solutionText: {
     margin: 0,
     color: "rgba(255,255,255,0.70)",
@@ -1146,6 +1291,9 @@ const styles: Record<string, React.CSSProperties> = {
     display: "grid",
     gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
     gap: 18,
+  },
+  featureColumnsMobile: {
+    gridTemplateColumns: "1fr",
   },
   featureColumn: {
     background: "linear-gradient(180deg, rgba(10,17,40,0.96), rgba(7,13,30,0.96))",
@@ -1171,6 +1319,9 @@ const styles: Record<string, React.CSSProperties> = {
     display: "grid",
     gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
     gap: 18,
+  },
+  workflowBandMobile: {
+    gridTemplateColumns: "1fr",
   },
   workflowStep: {
     background: "linear-gradient(180deg, rgba(10,17,40,0.96), rgba(7,13,30,0.96))",
@@ -1209,6 +1360,9 @@ const styles: Record<string, React.CSSProperties> = {
     gridTemplateColumns: "1fr 0.9fr",
     gap: 22,
     alignItems: "start",
+  },
+  configuratorMobile: {
+    gridTemplateColumns: "1fr",
   },
   configuratorLeft: {},
   configuratorRight: {},
