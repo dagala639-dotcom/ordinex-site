@@ -416,8 +416,9 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
               <h2 style={styles.sectionTitle}>See Ordinex in action</h2>
             </div>
             <p style={styles.sectionCopy}>
-              Real screens from Ordinex showing live waiter operations and
-              cashier control in a clean premium workflow.
+              Real screens from Ordinex showing live waiter operations, cashier
+              control, owner visibility, and manager workflow in a clean premium
+              system.
             </p>
           </div>
 
@@ -470,6 +471,65 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
                   height={900}
                   style={styles.productImage}
                 />
+              </div>
+            </div>
+
+            <div
+              style={{
+                ...styles.dashboardShowcaseGrid,
+                ...(isMobile ? styles.dashboardShowcaseGridMobile : {}),
+              }}
+            >
+              <div style={styles.productPanelMedium}>
+                <div style={styles.productPanelTop}>
+                  <div>
+                    <div style={styles.productPanelTag}>Owner Dashboard</div>
+                    <h3 style={styles.productPanelSmallTitle}>
+                      Executive visibility for owners
+                    </h3>
+                    <p style={styles.productPanelSmallText}>
+                      View hotel account exposure, top-selling items, cost
+                      breakdown, and high-level business performance from one
+                      premium summary screen.
+                    </p>
+                  </div>
+                </div>
+
+                <div style={styles.productImageFrame}>
+                  <Image
+                    src="/images/owner-dashboard.jpg"
+                    alt="Ordinex owner dashboard"
+                    width={1600}
+                    height={900}
+                    style={styles.productImage}
+                  />
+                </div>
+              </div>
+
+              <div style={styles.productPanelMedium}>
+                <div style={styles.productPanelTop}>
+                  <div>
+                    <div style={styles.productPanelTag}>Manager Console</div>
+                    <h3 style={styles.productPanelSmallTitle}>
+                      Daily operational control
+                    </h3>
+                    <p style={styles.productPanelSmallText}>
+                      Managers track sales, expenses, labor, pending bills, and
+                      stock activity from a central operational console built for
+                      fast moving businesses.
+                    </p>
+                  </div>
+                </div>
+
+                <div style={styles.productImageFrame}>
+                  <Image
+                    src="/images/manager-dashboard.jpg"
+                    alt="Ordinex manager dashboard"
+                    width={1600}
+                    height={900}
+                    style={styles.productImage}
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -1197,6 +1257,21 @@ const styles: Record<string, React.CSSProperties> = {
     padding: 26,
     boxShadow: "0 0 32px rgba(40, 72, 210, 0.08)",
   },
+  productPanelMedium: {
+    background: "linear-gradient(180deg, rgba(10,17,40,0.96), rgba(7,13,30,0.96))",
+    border: "1px solid rgba(92, 123, 255, 0.16)",
+    borderRadius: 28,
+    padding: 22,
+    boxShadow: "0 0 28px rgba(40, 72, 210, 0.08)",
+  },
+  dashboardShowcaseGrid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+    gap: 24,
+  },
+  dashboardShowcaseGridMobile: {
+    gridTemplateColumns: "1fr",
+  },
   productPanelTop: {
     marginBottom: 18,
   },
@@ -1220,12 +1295,26 @@ const styles: Record<string, React.CSSProperties> = {
     fontWeight: 800,
     color: "#ffffff",
   },
+  productPanelSmallTitle: {
+    margin: "0 0 10px 0",
+    fontSize: "clamp(22px, 3.2vw, 30px)",
+    lineHeight: 1.12,
+    fontWeight: 800,
+    color: "#ffffff",
+  },
   productPanelText: {
     margin: 0,
     color: "rgba(255,255,255,0.72)",
     fontSize: 16,
     lineHeight: 1.8,
     maxWidth: 820,
+  },
+  productPanelSmallText: {
+    margin: 0,
+    color: "rgba(255,255,255,0.72)",
+    fontSize: 15,
+    lineHeight: 1.75,
+    maxWidth: 720,
   },
   productImageFrame: {
     borderRadius: 24,
