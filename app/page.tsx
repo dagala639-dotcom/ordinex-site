@@ -497,7 +497,7 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
 
                 <div style={styles.productImageFrame}>
                   <Image
-                    src="/images/owner-dashboard.jpg"
+                    src="/images/owner-dashboard.png"
                     alt="Ordinex owner dashboard"
                     width={1600}
                     height={900}
@@ -523,7 +523,7 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
 
                 <div style={styles.productImageFrame}>
                   <Image
-                    src="/images/manager-dashboard.jpg"
+                    src="/images/manager-dashboard.png"
                     alt="Ordinex manager dashboard"
                     width={1600}
                     height={900}
