@@ -332,8 +332,10 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
                 <div style={styles.heroStatText}>Billing, payments, and shift control</div>
               </div>
               <div style={styles.heroStatCard}>
-                <div style={styles.heroStatNumber}>KDS</div>
-                <div style={styles.heroStatText}>Live kitchen and prep coordination</div>
+                <div style={styles.heroStatNumber}>Fuel</div>
+                <div style={styles.heroStatText}>
+                  Attendant sales capture and shift visibility
+                </div>
               </div>
             </div>
           </div>
@@ -417,8 +419,8 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
             </div>
             <p style={styles.sectionCopy}>
               Real screens from Ordinex showing live waiter operations, cashier
-              control, owner visibility, and manager workflow in a clean premium
-              system.
+              control, owner visibility, manager workflow, and fuel station
+              operations in a clean premium system.
             </p>
           </div>
 
@@ -467,6 +469,32 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
                 <Image
                   src="/images/cashier-screen.png"
                   alt="Ordinex cashier interface"
+                  width={1600}
+                  height={900}
+                  style={styles.productImage}
+                />
+              </div>
+            </div>
+
+            <div style={styles.productPanelLarge}>
+              <div style={styles.productPanelTop}>
+                <div>
+                  <div style={styles.productPanelTag}>Fuel Attendant Screen</div>
+                  <h3 style={styles.productPanelTitle}>
+                    Fast fuel sales capture with live shift visibility
+                  </h3>
+                  <p style={styles.productPanelText}>
+                    Attendants enter the amount paid and Ordinex automatically
+                    calculates litres sold, tracks payment method, and shows cash
+                    expected in hand for smooth shift control.
+                  </p>
+                </div>
+              </div>
+
+              <div style={styles.productImageFrame}>
+                <Image
+                  src="/images/fuelAttendant%20screen.png"
+                  alt="Ordinex fuel attendant screen"
                   width={1600}
                   height={900}
                   style={styles.productImage}
@@ -619,8 +647,9 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
                 Attendant to manager flow
               </h3>
               <p style={styles.solutionText}>
-                Fuel attendants use their own tablet to record sales and payment
-                activity while managers monitor totals and performance live.
+                Fuel attendants use their own tablet to record sales, calculate
+                litres automatically, monitor cash expected in hand, and give
+                managers clear shift-level visibility.
               </p>
             </div>
           </div>
