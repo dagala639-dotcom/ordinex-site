@@ -493,7 +493,7 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
 
               <div style={styles.productImageFrame}>
                 <Image
-                  src="/images/fuelAttendant%20screen.png"
+                  src="/images/fuelAttendant-screen.png"
                   alt="Ordinex fuel attendant screen"
                   width={1600}
                   height={900}
