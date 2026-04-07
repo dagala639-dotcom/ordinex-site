@@ -12,6 +12,54 @@ type BusinessType =
   | "hotel"
   | "fuel";
 
+type StoryStep = {
+  id: string;
+  eyebrow: string;
+  title: string;
+  text: string;
+  image: string;
+  alt: string;
+};
+
+const STORY_STEPS: StoryStep[] = [
+  {
+    id: "waiter",
+    eyebrow: "Waiter Order Flow",
+    title: "Take orders instantly from the table.",
+    text:
+      "Staff browse menu items, add notes, adjust quantity, and send the order in seconds from a clean tablet-first interface.",
+    image: "/images/orders.png",
+    alt: "Ordinex waiter order screen",
+  },
+  {
+    id: "kitchen",
+    eyebrow: "Kitchen Display System",
+    title: "Orders move straight to the kitchen.",
+    text:
+      "Kitchen teams see new, preparing, and ready orders in one live screen so production stays fast, organized, and easy to track.",
+    image: "/images/kitchen-screen.png",
+    alt: "Ordinex kitchen display screen",
+  },
+  {
+    id: "cashier",
+    eyebrow: "Cashier Control",
+    title: "Keep billing and payment under tight control.",
+    text:
+      "Cashiers manage bills, confirm payment methods, and maintain shift visibility from a central screen built for busy operations.",
+    image: "/images/cashier-screen.png",
+    alt: "Ordinex cashier screen",
+  },
+  {
+    id: "owner",
+    eyebrow: "Business Visibility",
+    title: "See what is happening across the business.",
+    text:
+      "Managers and owners get clean operational visibility across sales, staff activity, pending items, and business performance.",
+    image: "/images/owner-dashboard.png",
+    alt: "Ordinex owner dashboard",
+  },
+];
+
 export default function HomePage() {
   const [businessType, setBusinessType] = useState<BusinessType>("");
   const [tabletCount, setTabletCount] = useState(2);
@@ -23,15 +71,47 @@ export default function HomePage() {
   const [quotePhone, setQuotePhone] = useState("");
 
   const [isMobile, setIsMobile] = useState(false);
+  const [activeStory, setActiveStory] = useState(0);
 
   useEffect(() => {
     function checkMobile() {
-      setIsMobile(window.innerWidth <= 768);
+      setIsMobile(window.innerWidth <= 900);
     }
 
     checkMobile();
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const elements = STORY_STEPS.map((step) =>
+        document.getElementById(`story-step-${step.id}`)
+      ).filter(Boolean) as HTMLElement[];
+
+      if (!elements.length) return;
+
+      const viewportMiddle = window.innerHeight * 0.45;
+      let bestIndex = 0;
+      let bestDistance = Number.POSITIVE_INFINITY;
+
+      elements.forEach((element, index) => {
+        const rect = element.getBoundingClientRect();
+        const elementMiddle = rect.top + rect.height / 2;
+        const distance = Math.abs(elementMiddle - viewportMiddle);
+
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          bestIndex = index;
+        }
+      });
+
+      setActiveStory(bestIndex);
+    };
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const showKitchenOption =
@@ -229,12 +309,7 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
         <div style={styles.heroGlowTwo} />
         <div style={styles.heroGrid} />
 
-        <nav
-          style={{
-            ...styles.nav,
-            ...(isMobile ? styles.navMobile : {}),
-          }}
-        >
+        <nav style={{ ...styles.nav, ...(isMobile ? styles.navMobile : {}) }}>
           <div style={styles.brandWrap}>
             <Image
               src="/logo/ordinex-logo.jpeg"
@@ -248,11 +323,11 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
 
           {!isMobile ? (
             <div style={styles.navLinks}>
+              <a href="#product-story" style={styles.navLink}>
+                Product
+              </a>
               <a href="#solutions" style={styles.navLink}>
                 Solutions
-              </a>
-              <a href="#showcase" style={styles.navLink}>
-                Product
               </a>
               <a href="#features" style={styles.navLink}>
                 Features
@@ -267,10 +342,7 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
           ) : null}
 
           <button
-            style={{
-              ...styles.navButton,
-              ...(isMobile ? styles.navButtonMobile : {}),
-            }}
+            style={{ ...styles.navButton, ...(isMobile ? styles.navButtonMobile : {}) }}
             onClick={() => scrollToSection("contact")}
           >
             Request Demo
@@ -292,114 +364,176 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
                 ...(isMobile ? styles.heroTitleMobile : {}),
               }}
             >
-              Premium POS and operations software for fast-moving businesses.
+              One connected operations system for restaurants, hotels, bars, lounges, and fuel stations.
             </h1>
 
             <p style={styles.heroText}>
-              Ordinex connects waiter tablets, kitchen display, cashier control,
-              fuel attendant devices, reporting, and owner visibility in one
-              modern operating system.
+              Ordinex brings together ordering, kitchen flow, cashier control,
+              fuel sales capture, shift visibility, and business reporting in
+              one premium operational platform.
             </p>
 
             <div style={styles.heroActions}>
               <button
                 style={styles.heroPrimaryButton}
-                onClick={() => scrollToSection("calculator")}
+                onClick={() => scrollToSection("product-story")}
               >
-                Estimate Your Setup
+                View Product Flow
               </button>
 
               <button
                 style={styles.heroSecondaryButton}
-                onClick={() => scrollToSection("showcase")}
+                onClick={() => scrollToSection("calculator")}
               >
-                View Product
+                Estimate Your Setup
               </button>
             </div>
 
             <div
               style={{
-                ...styles.heroStats,
-                ...(isMobile ? styles.heroStatsMobile : {}),
+                ...styles.heroMiniStats,
+                ...(isMobile ? styles.heroMiniStatsMobile : {}),
               }}
             >
-              <div style={styles.heroStatCard}>
-                <div style={styles.heroStatNumber}>Waiter</div>
-                <div style={styles.heroStatText}>Tablet-ready front-of-house flow</div>
+              <div style={styles.heroMiniStat}>
+                <div style={styles.heroMiniLabel}>Floor Operations</div>
+                <div style={styles.heroMiniValue}>Waiter tablets and table flow</div>
               </div>
-              <div style={styles.heroStatCard}>
-                <div style={styles.heroStatNumber}>Cashier</div>
-                <div style={styles.heroStatText}>Billing, payments, and shift control</div>
+              <div style={styles.heroMiniStat}>
+                <div style={styles.heroMiniLabel}>Kitchen Coordination</div>
+                <div style={styles.heroMiniValue}>Live KDS status and production flow</div>
               </div>
-              <div style={styles.heroStatCard}>
-                <div style={styles.heroStatNumber}>Fuel</div>
-                <div style={styles.heroStatText}>
-                  Attendant sales capture and shift visibility
-                </div>
+              <div style={styles.heroMiniStat}>
+                <div style={styles.heroMiniLabel}>Business Visibility</div>
+                <div style={styles.heroMiniValue}>Cashier, manager, owner, and fuel reporting</div>
               </div>
             </div>
           </div>
 
-          <div style={styles.heroFormShell}>
-            <div style={styles.heroFormCard}>
-              <div style={styles.heroFormHeader}>
-                <p style={styles.formLabel}>Request a demo</p>
-                <h3 style={styles.formTitle}>See Ordinex in action</h3>
-                <p style={styles.formText}>
-                  Tell us about your business and we’ll prepare the right setup
-                  direction for you.
-                </p>
+          <div style={styles.heroShowcaseShell}>
+            <div style={styles.heroShowcaseCard}>
+              <div style={styles.heroShowcaseHeader}>
+                <div>
+                  <div style={styles.heroShowcaseTag}>Live Product</div>
+                  <h3 style={styles.heroShowcaseTitle}>See how the system works</h3>
+                </div>
+                <div style={styles.heroStatusPill}>Realtime</div>
               </div>
 
-              <form style={styles.form} onSubmit={handleDemoSubmit}>
-                <input
-                  name="businessName"
-                  placeholder="Business Name"
-                  style={styles.input}
-                  required
+              <div style={styles.heroShowcaseImageWrap}>
+                <Image
+                  src="/images/orders.png"
+                  alt="Ordinex waiter order screen"
+                  width={1600}
+                  height={900}
+                  style={styles.heroShowcaseImage}
                 />
-                <select name="businessType" style={styles.input} required defaultValue="">
-                  <option value="" disabled>
-                    Business Type
-                  </option>
-                  <option>Restaurant</option>
-                  <option>Bar</option>
-                  <option>Lounge / Club</option>
-                  <option>Café</option>
-                  <option>Fuel Station</option>
-                  <option>Hotel / Hospitality</option>
-                  <option>Other</option>
-                </select>
-                <input
-                  name="fullName"
-                  placeholder="Full Name"
-                  style={styles.input}
-                  required
-                />
-                <input
-                  name="phone"
-                  placeholder="Phone Number"
-                  style={styles.input}
-                  required
-                />
-                <input
-                  name="email"
-                  type="email"
-                  placeholder="Email Address"
-                  style={styles.input}
-                  required
-                />
-                <input
-                  name="location"
-                  placeholder="Location"
-                  style={styles.input}
-                  required
-                />
+              </div>
 
-                <button type="submit" style={styles.formSubmitButton}>
-                  Request a Demo
-                </button>
-              </form>
+              <div style={styles.heroShowcaseFooter}>
+                <div style={styles.heroShowcaseFooterCard}>
+                  <div style={styles.heroShowcaseFooterLabel}>Orders</div>
+                  <div style={styles.heroShowcaseFooterText}>
+                    Staff take orders with a clean, tablet-first workflow.
+                  </div>
+                </div>
+                <div style={styles.heroShowcaseFooterCard}>
+                  <div style={styles.heroShowcaseFooterLabel}>Kitchen</div>
+                  <div style={styles.heroShowcaseFooterText}>
+                    Orders move directly to production with live status updates.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section style={styles.section} id="product-story">
+        <div style={styles.sectionInnerWide}>
+          <div
+            style={{
+              ...styles.sectionHeader,
+              ...(isMobile ? styles.sectionHeaderMobile : {}),
+            }}
+          >
+            <div>
+              <div style={styles.sectionEyebrow}>Product Story</div>
+              <h2 style={styles.sectionTitle}>See how Ordinex works from order to oversight</h2>
+            </div>
+            <p style={styles.sectionCopy}>
+              Scroll through the live flow. Orders are captured, routed, paid,
+              and monitored in one connected operational system.
+            </p>
+          </div>
+
+          <div
+            style={{
+              ...styles.storyShell,
+              ...(isMobile ? styles.storyShellMobile : {}),
+            }}
+          >
+            <div style={{ ...styles.storyCopyRail, ...(isMobile ? styles.storyCopyRailMobile : {}) }}>
+              {STORY_STEPS.map((step, index) => {
+                const isActive = activeStory === index;
+
+                return (
+                  <div
+                    key={step.id}
+                    id={`story-step-${step.id}`}
+                    style={{
+                      ...styles.storyTextBlock,
+                      ...(isActive ? styles.storyTextBlockActive : {}),
+                    }}
+                  >
+                    <div style={styles.storyEyebrow}>{step.eyebrow}</div>
+                    <h3 style={styles.storyTitle}>{step.title}</h3>
+                    <p style={styles.storyText}>{step.text}</p>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div style={{ ...styles.storyVisualRail, ...(isMobile ? styles.storyVisualRailMobile : {}) }}>
+              <div style={styles.storyStickyCard}>
+                <div style={styles.storyVisualHeader}>
+                  <div style={styles.storyVisualHeaderLeft}>
+                    <div style={styles.storyVisualTag}>Ordinex Workflow</div>
+                    <div style={styles.storyVisualDots}>
+                      {STORY_STEPS.map((step, index) => (
+                        <button
+                          key={step.id}
+                          type="button"
+                          onClick={() => {
+                            const element = document.getElementById(`story-step-${step.id}`);
+                            if (element) {
+                              element.scrollIntoView({ behavior: "smooth", block: "center" });
+                            }
+                          }}
+                          style={{
+                            ...styles.storyDot,
+                            ...(activeStory === index ? styles.storyDotActive : {}),
+                          }}
+                          aria-label={`Go to ${step.title}`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  <div style={styles.storyVisualStatus}>
+                    {activeStory + 1}/{STORY_STEPS.length}
+                  </div>
+                </div>
+
+                <div style={styles.storyImageFrame}>
+                  <Image
+                    src={STORY_STEPS[activeStory].image}
+                    alt={STORY_STEPS[activeStory].alt}
+                    width={1600}
+                    height={900}
+                    style={styles.storyImage}
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -414,68 +548,16 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
             }}
           >
             <div>
-              <div style={styles.sectionEyebrow}>Product Showcase</div>
-              <h2 style={styles.sectionTitle}>See Ordinex in action</h2>
+              <div style={styles.sectionEyebrow}>Additional Screens</div>
+              <h2 style={styles.sectionTitle}>Built for different roles across the business</h2>
             </div>
             <p style={styles.sectionCopy}>
-              Real screens from Ordinex showing live waiter operations, cashier
-              control, owner visibility, manager workflow, and fuel station
-              operations in a clean premium system.
+              Beyond the core flow, Ordinex gives each role the tools they need
+              to operate with speed, clarity, and control.
             </p>
           </div>
 
           <div style={styles.productStack}>
-            <div style={styles.productPanelLarge}>
-              <div style={styles.productPanelTop}>
-                <div>
-                  <div style={styles.productPanelTag}>Waiter Console</div>
-                  <h3 style={styles.productPanelTitle}>
-                    Live table control and floor operations
-                  </h3>
-                  <p style={styles.productPanelText}>
-                    Waiters see available tables, locked tables, their own open
-                    bills, and service flow from one clean interface designed
-                    for speed.
-                  </p>
-                </div>
-              </div>
-
-              <div style={styles.productImageFrame}>
-                <Image
-                  src="/images/waiter-screen.png"
-                  alt="Ordinex waiter interface"
-                  width={1600}
-                  height={900}
-                  style={styles.productImage}
-                />
-              </div>
-            </div>
-
-            <div style={styles.productPanelLarge}>
-              <div style={styles.productPanelTop}>
-                <div>
-                  <div style={styles.productPanelTag}>Cashier Console</div>
-                  <h3 style={styles.productPanelTitle}>
-                    Billing, payment, and shift visibility
-                  </h3>
-                  <p style={styles.productPanelText}>
-                    Cashiers monitor bills, unpaid totals, payment breakdowns,
-                    and daily figures from a powerful operational control screen.
-                  </p>
-                </div>
-              </div>
-
-              <div style={styles.productImageFrame}>
-                <Image
-                  src="/images/cashier-screen.png"
-                  alt="Ordinex cashier interface"
-                  width={1600}
-                  height={900}
-                  style={styles.productImage}
-                />
-              </div>
-            </div>
-
             <div style={styles.productPanelLarge}>
               <div style={styles.productPanelTop}>
                 <div>
@@ -486,7 +568,7 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
                   <p style={styles.productPanelText}>
                     Attendants enter the amount paid and Ordinex automatically
                     calculates litres sold, tracks payment method, and shows cash
-                    expected in hand for smooth shift control.
+                    expected in hand for stronger shift control.
                   </p>
                 </div>
               </div>
@@ -511,22 +593,22 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
               <div style={styles.productPanelMedium}>
                 <div style={styles.productPanelTop}>
                   <div>
-                    <div style={styles.productPanelTag}>Owner Dashboard</div>
+                    <div style={styles.productPanelTag}>Manager Console</div>
                     <h3 style={styles.productPanelSmallTitle}>
-                      Executive visibility for owners
+                      Daily operational control
                     </h3>
                     <p style={styles.productPanelSmallText}>
-                      View hotel account exposure, top-selling items, cost
-                      breakdown, and high-level business performance from one
-                      premium summary screen.
+                      Managers track sales, expenses, labour, stock activity,
+                      supplier movements, and pending operational items in one
+                      central console.
                     </p>
                   </div>
                 </div>
 
                 <div style={styles.productImageFrame}>
                   <Image
-                    src="/images/owner-dashboard.png"
-                    alt="Ordinex owner dashboard"
+                    src="/images/manager-dashboard.png"
+                    alt="Ordinex manager dashboard"
                     width={1600}
                     height={900}
                     style={styles.productImage}
@@ -537,22 +619,22 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
               <div style={styles.productPanelMedium}>
                 <div style={styles.productPanelTop}>
                   <div>
-                    <div style={styles.productPanelTag}>Manager Console</div>
+                    <div style={styles.productPanelTag}>Owner Dashboard</div>
                     <h3 style={styles.productPanelSmallTitle}>
-                      Daily operational control
+                      Executive visibility for owners
                     </h3>
                     <p style={styles.productPanelSmallText}>
-                      Managers track sales, expenses, labor, pending bills, and
-                      stock activity from a central operational console built for
-                      fast moving businesses.
+                      View business performance, top-selling items, operational
+                      trends, and commercial visibility from one premium summary
+                      screen.
                     </p>
                   </div>
                 </div>
 
                 <div style={styles.productImageFrame}>
                   <Image
-                    src="/images/manager-dashboard.png"
-                    alt="Ordinex manager dashboard"
+                    src="/images/owner-dashboard.png"
+                    alt="Ordinex owner dashboard"
                     width={1600}
                     height={900}
                     style={styles.productImage}
@@ -577,8 +659,7 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
               <h2 style={styles.sectionTitle}>Structured for real business models</h2>
             </div>
             <p style={styles.sectionCopy}>
-              Ordinex is designed around the real workflows of restaurants,
-              bars, hospitality businesses, and fuel stations.
+              Ordinex is built around real operational flow, not generic software screens.
             </p>
           </div>
 
@@ -596,11 +677,11 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
                   ...(isMobile ? styles.solutionTitleMobile : {}),
                 }}
               >
-                Waiter to kitchen to cashier
+                Waiter → Kitchen → Cashier
               </h3>
               <p style={styles.solutionText}>
-                Give waiters their own tablets, move orders to the kitchen
-                instantly, and keep payment confirmation under cashier control.
+                Waiters create orders from tablets, kitchen receives them
+                instantly, and cashiers maintain payment control from one system.
               </p>
             </div>
 
@@ -612,11 +693,11 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
                   ...(isMobile ? styles.solutionTitleMobile : {}),
                 }}
               >
-                Tabs, VIP tables, and night control
+                Fast service with tighter billing visibility
               </h3>
               <p style={styles.solutionText}>
-                Manage open tabs, repeated drink orders, fast service, and
-                cashier-controlled payment flow during high-volume nights.
+                Manage open tabs, repeated drink orders, fast floor movement,
+                and cashier-controlled collection during busy nights.
               </p>
             </div>
 
@@ -628,11 +709,11 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
                   ...(isMobile ? styles.solutionTitleMobile : {}),
                 }}
               >
-                Connected service operations
+                Connected service and management control
               </h3>
               <p style={styles.solutionText}>
-                Coordinate service points, staff workflows, and reporting
-                visibility in one connected operational environment.
+                Coordinate service points, staff flow, reporting visibility,
+                and business monitoring inside one connected environment.
               </p>
             </div>
 
@@ -644,12 +725,11 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
                   ...(isMobile ? styles.solutionTitleMobile : {}),
                 }}
               >
-                Attendant to manager flow
+                Attendant → Shift summary → Management
               </h3>
               <p style={styles.solutionText}>
-                Fuel attendants use their own tablet to record sales, calculate
-                litres automatically, monitor cash expected in hand, and give
-                managers clear shift-level visibility.
+                Fuel attendants record sales, litres are calculated instantly,
+                and managers get clearer shift-level accountability.
               </p>
             </div>
           </div>
@@ -665,12 +745,12 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
             }}
           >
             <div>
-              <div style={styles.sectionEyebrow}>Features</div>
-              <h2 style={styles.sectionTitle}>A commercial-grade operations stack</h2>
+              <div style={styles.sectionEyebrow}>Core Capabilities</div>
+              <h2 style={styles.sectionTitle}>A connected commercial operations stack</h2>
             </div>
             <p style={styles.sectionCopy}>
-              Everything from service flow and payments to permissions, reports,
-              and offline continuity.
+              The platform is built around operational control, payment visibility,
+              and business-level insight.
             </p>
           </div>
 
@@ -681,30 +761,27 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
             }}
           >
             <div style={styles.featureColumn}>
-              <div style={styles.featureGroupTitle}>Operations</div>
-              <div style={styles.featureItem}>Multi-terminal system</div>
-              <div style={styles.featureItem}>Waiter / attendant devices</div>
-              <div style={styles.featureItem}>Kitchen display system</div>
-              <div style={styles.featureItem}>Cashier POS control</div>
-              <div style={styles.featureItem}>Shift and workflow management</div>
+              <div style={styles.featureGroupTitle}>Operations Control</div>
+              <div style={styles.featureItem}>Tablet-based ordering and task flow</div>
+              <div style={styles.featureItem}>Kitchen display routing and status updates</div>
+              <div style={styles.featureItem}>Shift-aware device workflows</div>
+              <div style={styles.featureItem}>Multi-role operational coordination</div>
             </div>
 
             <div style={styles.featureColumn}>
-              <div style={styles.featureGroupTitle}>Payments</div>
-              <div style={styles.featureItem}>M-Pesa integration ready</div>
-              <div style={styles.featureItem}>Cash and card flow support</div>
-              <div style={styles.featureItem}>Drawer and cashier tracking</div>
-              <div style={styles.featureItem}>Receipt-based billing flow</div>
-              <div style={styles.featureItem}>End-of-shift visibility</div>
+              <div style={styles.featureGroupTitle}>Payment Visibility</div>
+              <div style={styles.featureItem}>Cash, M-Pesa, and card support</div>
+              <div style={styles.featureItem}>Cashier-controlled billing confirmation</div>
+              <div style={styles.featureItem}>Fuel and service payment tracking</div>
+              <div style={styles.featureItem}>End-of-shift accountability</div>
             </div>
 
             <div style={styles.featureColumn}>
-              <div style={styles.featureGroupTitle}>Control & Insight</div>
-              <div style={styles.featureItem}>Roles and permissions</div>
-              <div style={styles.featureItem}>Analytics and reports</div>
-              <div style={styles.featureItem}>Offline capability</div>
-              <div style={styles.featureItem}>Cloud/local expansion ready</div>
-              <div style={styles.featureItem}>Owner dashboard direction</div>
+              <div style={styles.featureGroupTitle}>Reporting & Insight</div>
+              <div style={styles.featureItem}>Manager dashboards and business summaries</div>
+              <div style={styles.featureItem}>Owner visibility across operations</div>
+              <div style={styles.featureItem}>Roles, permissions, and control layers</div>
+              <div style={styles.featureItem}>Offline-ready expansion direction</div>
             </div>
           </div>
         </div>
@@ -720,33 +797,33 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
           >
             <div style={styles.workflowStep}>
               <div style={styles.workflowNumber}>01</div>
-              <div style={styles.workflowStepTitle}>Capture activity</div>
+              <div style={styles.workflowStepTitle}>Record</div>
               <div style={styles.workflowStepText}>
-                Staff use role-based devices to log orders, bills, or fuel sales.
+                Staff use dedicated devices to capture orders, bills, or fuel sales.
               </div>
             </div>
 
             <div style={styles.workflowStep}>
               <div style={styles.workflowNumber}>02</div>
-              <div style={styles.workflowStepTitle}>Route to the right point</div>
+              <div style={styles.workflowStepTitle}>Route</div>
               <div style={styles.workflowStepText}>
-                Orders and actions move to kitchen, cashier, or management flow.
+                Activity moves automatically to kitchen, cashier, or management flow.
               </div>
             </div>
 
             <div style={styles.workflowStep}>
               <div style={styles.workflowNumber}>03</div>
-              <div style={styles.workflowStepTitle}>Control payments</div>
+              <div style={styles.workflowStepTitle}>Confirm</div>
               <div style={styles.workflowStepText}>
-                Cashiers confirm payments and keep clear financial visibility.
+                Payments and operational actions are confirmed in the right control point.
               </div>
             </div>
 
             <div style={styles.workflowStep}>
               <div style={styles.workflowNumber}>04</div>
-              <div style={styles.workflowStepTitle}>See performance</div>
+              <div style={styles.workflowStepTitle}>Monitor</div>
               <div style={styles.workflowStepText}>
-                Managers and owners get reporting, insight, and stronger control.
+                Managers and owners get cleaner visibility over business performance.
               </div>
             </div>
           </div>
@@ -766,8 +843,7 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
               <h2 style={styles.sectionTitle}>Build your Ordinex package</h2>
             </div>
             <p style={styles.sectionCopy}>
-              Cashier POS and tablets are always part of the setup. Add kitchen
-              display where needed.
+              Cashier POS and staff tablets form the base setup. Add kitchen display where needed.
             </p>
           </div>
 
@@ -907,8 +983,7 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
             <div style={styles.contactBadge}>Contact</div>
             <h2 style={styles.contactTitle}>Ready to talk about Ordinex?</h2>
             <p style={styles.contactText}>
-              Reach out for demos, pricing, setup planning, or installation
-              discussions.
+              Reach out for demos, pricing, setup planning, or installation discussions.
             </p>
 
             <div style={styles.contactButtons}>
@@ -931,6 +1006,66 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
               <div style={styles.contactMetaChip}>WhatsApp: 0769753581</div>
               <div style={styles.contactMetaChip}>Email: hello@ordinex.co</div>
             </div>
+
+            <div style={styles.contactFormWrap}>
+              <div style={styles.contactFormHeader}>
+                <div style={styles.formLabel}>Request a demo</div>
+                <h3 style={styles.formTitle}>See Ordinex in action</h3>
+                <p style={styles.formText}>
+                  Tell us about your business and we’ll prepare the right setup direction for you.
+                </p>
+              </div>
+
+              <form style={styles.form} onSubmit={handleDemoSubmit}>
+                <input
+                  name="businessName"
+                  placeholder="Business Name"
+                  style={styles.input}
+                  required
+                />
+                <select name="businessType" style={styles.input} required defaultValue="">
+                  <option value="" disabled>
+                    Business Type
+                  </option>
+                  <option>Restaurant</option>
+                  <option>Bar</option>
+                  <option>Lounge / Club</option>
+                  <option>Café</option>
+                  <option>Fuel Station</option>
+                  <option>Hotel / Hospitality</option>
+                  <option>Other</option>
+                </select>
+                <input
+                  name="fullName"
+                  placeholder="Full Name"
+                  style={styles.input}
+                  required
+                />
+                <input
+                  name="phone"
+                  placeholder="Phone Number"
+                  style={styles.input}
+                  required
+                />
+                <input
+                  name="email"
+                  type="email"
+                  placeholder="Email Address"
+                  style={styles.input}
+                  required
+                />
+                <input
+                  name="location"
+                  placeholder="Location"
+                  style={styles.input}
+                  required
+                />
+
+                <button type="submit" style={styles.formSubmitButton}>
+                  Request a Demo
+                </button>
+              </form>
+            </div>
           </div>
         </div>
       </section>
@@ -941,17 +1076,18 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
 const styles: Record<string, React.CSSProperties> = {
   page: {
     margin: 0,
-    background: "#040816",
+    background: "#030712",
     color: "#ffffff",
     fontFamily:
       'Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+    scrollBehavior: "smooth",
   },
 
   hero: {
     position: "relative",
     minHeight: "100vh",
     overflow: "hidden",
-    background: "#040816",
+    background: "#030712",
   },
   heroVideo: {
     position: "absolute",
@@ -964,36 +1100,36 @@ const styles: Record<string, React.CSSProperties> = {
     position: "absolute",
     inset: 0,
     background:
-      "linear-gradient(180deg, rgba(4,8,22,0.70) 0%, rgba(4,8,22,0.88) 55%, rgba(4,8,22,0.98) 100%)",
+      "linear-gradient(180deg, rgba(3,7,18,0.54) 0%, rgba(3,7,18,0.84) 55%, rgba(3,7,18,0.98) 100%)",
   },
   heroGlowOne: {
     position: "absolute",
-    width: 500,
-    height: 500,
+    width: 520,
+    height: 520,
     borderRadius: "50%",
-    background: "rgba(61, 112, 255, 0.18)",
-    filter: "blur(120px)",
+    background: "rgba(47, 101, 255, 0.12)",
+    filter: "blur(130px)",
     top: -120,
-    left: -100,
+    left: -120,
   },
   heroGlowTwo: {
     position: "absolute",
     width: 420,
     height: 420,
     borderRadius: "50%",
-    background: "rgba(17, 72, 255, 0.14)",
-    filter: "blur(110px)",
+    background: "rgba(41, 84, 255, 0.08)",
+    filter: "blur(120px)",
     bottom: -120,
-    right: -80,
+    right: -120,
   },
   heroGrid: {
     position: "absolute",
     inset: 0,
     backgroundImage:
-      "linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px)",
-    backgroundSize: "44px 44px",
+      "linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)",
+    backgroundSize: "46px 46px",
     pointerEvents: "none",
-    maskImage: "linear-gradient(to bottom, rgba(0,0,0,0.75), transparent)",
+    maskImage: "linear-gradient(to bottom, rgba(0,0,0,0.72), transparent)",
   },
 
   nav: {
@@ -1001,7 +1137,7 @@ const styles: Record<string, React.CSSProperties> = {
     zIndex: 2,
     maxWidth: 1280,
     margin: "0 auto",
-    padding: "22px 20px",
+    padding: "24px 20px",
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
@@ -1019,7 +1155,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   logoImage: {
     width: "auto",
-    height: "46px",
+    height: "44px",
     objectFit: "contain",
     borderRadius: "10px",
   },
@@ -1031,16 +1167,15 @@ const styles: Record<string, React.CSSProperties> = {
     justifyContent: "center",
   },
   navLink: {
-    color: "rgba(255,255,255,0.82)",
+    color: "rgba(255,255,255,0.76)",
     textDecoration: "none",
     fontSize: 14,
     fontWeight: 600,
   },
   navButton: {
-    background: "linear-gradient(135deg, #2551ff, #5c7dff)",
-    color: "#ffffff",
-    border: "1px solid rgba(114, 145, 255, 0.35)",
-    boxShadow: "0 0 24px rgba(68, 102, 255, 0.26)",
+    background: "#ffffff",
+    color: "#030712",
+    border: "1px solid rgba(255,255,255,0.15)",
     padding: "12px 18px",
     borderRadius: 999,
     fontWeight: 700,
@@ -1058,68 +1193,67 @@ const styles: Record<string, React.CSSProperties> = {
     margin: "0 auto",
     minHeight: "calc(100vh - 90px)",
     display: "grid",
-    gridTemplateColumns: "1.1fr 0.78fr",
-    gap: 28,
+    gridTemplateColumns: "1.05fr 0.95fr",
+    gap: 36,
     alignItems: "center",
-    padding: "24px 20px 70px",
+    padding: "20px 20px 88px",
   },
   heroInnerMobile: {
     gridTemplateColumns: "1fr",
-    padding: "18px 16px 50px",
-    gap: 24,
+    padding: "18px 16px 56px",
+    gap: 26,
   },
   heroCopy: {
     maxWidth: 720,
   },
   heroPill: {
     display: "inline-block",
-    padding: "9px 15px",
+    padding: "8px 14px",
     borderRadius: 999,
-    background: "rgba(49,90,255,0.14)",
-    border: "1px solid rgba(114,145,255,0.24)",
-    color: "#9fb8ff",
+    background: "rgba(255,255,255,0.05)",
+    border: "1px solid rgba(255,255,255,0.08)",
+    color: "#cbd5e1",
     fontSize: 13,
     fontWeight: 700,
     marginBottom: 18,
   },
   heroTitle: {
-    margin: "0 0 14px 0",
-    fontSize: "clamp(36px, 7vw, 72px)",
+    margin: "0 0 16px 0",
+    fontSize: "clamp(38px, 7vw, 78px)",
     lineHeight: 1.02,
-    letterSpacing: -2,
+    letterSpacing: -2.2,
     fontWeight: 800,
     color: "#ffffff",
-    maxWidth: 820,
+    maxWidth: 860,
   },
   heroTitleMobile: {
     fontSize: "42px",
-    lineHeight: 1.03,
-    letterSpacing: -1.5,
+    lineHeight: 1.04,
+    letterSpacing: -1.4,
   },
   heroText: {
     margin: 0,
-    color: "rgba(255,255,255,0.76)",
-    fontSize: "clamp(16px, 2.3vw, 19px)",
+    color: "rgba(255,255,255,0.72)",
+    fontSize: "clamp(16px, 2vw, 19px)",
     lineHeight: 1.8,
-    maxWidth: 680,
+    maxWidth: 650,
   },
   heroActions: {
     display: "flex",
     gap: 12,
     flexWrap: "wrap",
-    marginTop: 24,
-    marginBottom: 28,
+    marginTop: 28,
+    marginBottom: 32,
   },
   heroPrimaryButton: {
     padding: "15px 20px",
     borderRadius: 14,
     border: "none",
-    background: "linear-gradient(135deg, #2551ff, #5c7dff)",
-    color: "#ffffff",
+    background: "#ffffff",
+    color: "#030712",
     fontSize: 15,
     fontWeight: 800,
     cursor: "pointer",
-    boxShadow: "0 0 24px rgba(68, 102, 255, 0.26)",
     minWidth: "190px",
   },
   heroSecondaryButton: {
@@ -1133,105 +1267,123 @@ const styles: Record<string, React.CSSProperties> = {
     cursor: "pointer",
     minWidth: "170px",
   },
-  heroStats: {
+  heroMiniStats: {
     display: "grid",
     gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-    gap: 14,
+    gap: 16,
   },
-  heroStatsMobile: {
+  heroMiniStatsMobile: {
     gridTemplateColumns: "1fr",
   },
-  heroStatCard: {
-    background: "rgba(11, 18, 42, 0.72)",
-    border: "1px solid rgba(95, 126, 255, 0.14)",
-    borderRadius: 20,
-    padding: 18,
-    backdropFilter: "blur(12px)",
+  heroMiniStat: {
+    padding: "0 8px 0 0",
   },
-  heroStatNumber: {
+  heroMiniLabel: {
+    color: "#ffffff",
+    fontSize: 15,
+    fontWeight: 700,
+    marginBottom: 8,
+  },
+  heroMiniValue: {
+    color: "rgba(255,255,255,0.62)",
+    fontSize: 14,
+    lineHeight: 1.65,
+  },
+
+  heroShowcaseShell: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  heroShowcaseCard: {
+    width: "100%",
+    maxWidth: 620,
+    background: "linear-gradient(180deg, rgba(12,18,35,0.9), rgba(8,12,24,0.92))",
+    border: "1px solid rgba(255,255,255,0.08)",
+    borderRadius: 32,
+    padding: 22,
+    boxShadow: "0 24px 70px rgba(0,0,0,0.34)",
+    backdropFilter: "blur(16px)",
+  },
+  heroShowcaseHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+    gap: 14,
+    alignItems: "center",
+    marginBottom: 18,
+  },
+  heroShowcaseTag: {
+    display: "inline-block",
+    padding: "7px 12px",
+    borderRadius: 999,
+    background: "rgba(255,255,255,0.05)",
+    border: "1px solid rgba(255,255,255,0.08)",
+    color: "#b8c6ff",
+    fontSize: 12,
+    fontWeight: 800,
+    letterSpacing: 0.7,
+    textTransform: "uppercase",
+    marginBottom: 10,
+  },
+  heroShowcaseTitle: {
+    margin: 0,
     color: "#ffffff",
     fontSize: 24,
     fontWeight: 800,
+    lineHeight: 1.1,
+  },
+  heroStatusPill: {
+    padding: "10px 14px",
+    borderRadius: 999,
+    background: "rgba(34,197,94,0.14)",
+    border: "1px solid rgba(34,197,94,0.16)",
+    color: "#86efac",
+    fontSize: 12,
+    fontWeight: 800,
+    whiteSpace: "nowrap",
+  },
+  heroShowcaseImageWrap: {
+    borderRadius: 24,
+    overflow: "hidden",
+    border: "1px solid rgba(255,255,255,0.08)",
+    background: "rgba(255,255,255,0.02)",
+    boxShadow: "0 20px 44px rgba(0,0,0,0.28)",
+  },
+  heroShowcaseImage: {
+    width: "100%",
+    height: "auto",
+    display: "block",
+  },
+  heroShowcaseFooter: {
+    display: "grid",
+    gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+    gap: 12,
+    marginTop: 14,
+  },
+  heroShowcaseFooterCard: {
+    background: "rgba(255,255,255,0.03)",
+    border: "1px solid rgba(255,255,255,0.05)",
+    borderRadius: 18,
+    padding: 14,
+  },
+  heroShowcaseFooterLabel: {
+    color: "#ffffff",
+    fontSize: 14,
+    fontWeight: 700,
     marginBottom: 8,
   },
-  heroStatText: {
-    color: "rgba(255,255,255,0.68)",
-    fontSize: 14,
+  heroShowcaseFooterText: {
+    color: "rgba(255,255,255,0.64)",
+    fontSize: 13,
     lineHeight: 1.6,
   },
 
-  heroFormShell: {
-    display: "flex",
-    justifyContent: "center",
-  },
-  heroFormCard: {
-    width: "100%",
-    maxWidth: 430,
-    background: "rgba(9, 16, 38, 0.76)",
-    border: "1px solid rgba(96, 125, 255, 0.18)",
-    borderRadius: 28,
-    padding: 24,
-    boxShadow: "0 0 30px rgba(42, 78, 220, 0.12)",
-    backdropFilter: "blur(18px)",
-  },
-  heroFormHeader: {
-    marginBottom: 18,
-  },
-  formLabel: {
-    margin: 0,
-    color: "#8fb1ff",
-    fontSize: 13,
-    fontWeight: 800,
-    textTransform: "uppercase",
-    letterSpacing: 0.8,
-  },
-  formTitle: {
-    margin: "10px 0 8px 0",
-    fontSize: 28,
-    lineHeight: 1.1,
-    fontWeight: 800,
-    color: "#ffffff",
-  },
-  formText: {
-    margin: 0,
-    color: "rgba(255,255,255,0.72)",
-    fontSize: 14,
-    lineHeight: 1.7,
-  },
-  form: {
-    display: "grid",
-    gap: 12,
-  },
-  input: {
-    width: "100%",
-    boxSizing: "border-box",
-    padding: "15px 16px",
-    borderRadius: 14,
-    border: "1px solid rgba(113, 144, 255, 0.16)",
-    background: "rgba(255,255,255,0.05)",
-    color: "#ffffff",
-    fontSize: 15,
-    outline: "none",
-  },
-  formSubmitButton: {
-    marginTop: 4,
-    padding: "15px 18px",
-    borderRadius: 14,
-    border: "none",
-    background: "linear-gradient(135deg, #2551ff, #5c7dff)",
-    color: "#ffffff",
-    fontSize: 15,
-    fontWeight: 800,
-    cursor: "pointer",
-    boxShadow: "0 0 24px rgba(68, 102, 255, 0.24)",
-  },
-
   section: {
-    background: "#040816",
-    padding: "92px 16px",
+    background: "#030712",
+    padding: "110px 16px",
   },
   sectionInner: {
-    maxWidth: 1220,
+    maxWidth: 1180,
     margin: "0 auto",
   },
   sectionInnerWide: {
@@ -1244,35 +1396,164 @@ const styles: Record<string, React.CSSProperties> = {
     gap: 24,
     alignItems: "end",
     flexWrap: "wrap",
-    marginBottom: 28,
+    marginBottom: 36,
   },
   sectionHeaderMobile: {
     alignItems: "start",
     gap: 14,
   },
   sectionEyebrow: {
-    color: "#8fb1ff",
-    fontSize: 13,
+    color: "#94a3b8",
+    fontSize: 12,
     fontWeight: 800,
     textTransform: "uppercase",
-    letterSpacing: 0.8,
-    marginBottom: 10,
+    letterSpacing: 0.9,
+    marginBottom: 12,
   },
   sectionTitle: {
     margin: 0,
-    fontSize: "clamp(28px, 4.6vw, 48px)",
-    lineHeight: 1.08,
-    letterSpacing: -1,
+    fontSize: "clamp(30px, 4.6vw, 54px)",
+    lineHeight: 1.06,
+    letterSpacing: -1.4,
     fontWeight: 800,
     color: "#ffffff",
-    maxWidth: 740,
+    maxWidth: 800,
   },
   sectionCopy: {
     margin: 0,
-    maxWidth: 460,
-    color: "rgba(255,255,255,0.70)",
+    maxWidth: 470,
+    color: "rgba(255,255,255,0.68)",
     fontSize: 16,
     lineHeight: 1.8,
+  },
+
+  storyShell: {
+    display: "grid",
+    gridTemplateColumns: "0.82fr 1.18fr",
+    gap: 36,
+    alignItems: "start",
+  },
+  storyShellMobile: {
+    gridTemplateColumns: "1fr",
+    gap: 24,
+  },
+  storyCopyRail: {
+    display: "grid",
+    gap: 36,
+  },
+  storyCopyRailMobile: {
+    gap: 18,
+  },
+  storyTextBlock: {
+    minHeight: "54vh",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    opacity: 0.34,
+    transform: "translateY(18px)",
+    transition: "all 260ms ease",
+    paddingRight: 18,
+  },
+  storyTextBlockActive: {
+    opacity: 1,
+    transform: "translateY(0)",
+  },
+  storyEyebrow: {
+    color: "#8ea4ff",
+    fontSize: 12,
+    fontWeight: 800,
+    textTransform: "uppercase",
+    letterSpacing: 0.9,
+    marginBottom: 14,
+  },
+  storyTitle: {
+    margin: "0 0 14px 0",
+    fontSize: "clamp(28px, 4vw, 44px)",
+    lineHeight: 1.08,
+    letterSpacing: -1.1,
+    fontWeight: 800,
+    color: "#ffffff",
+  },
+  storyText: {
+    margin: 0,
+    color: "rgba(255,255,255,0.7)",
+    fontSize: 17,
+    lineHeight: 1.85,
+    maxWidth: 520,
+  },
+  storyVisualRail: {
+    position: "relative",
+  },
+  storyVisualRailMobile: {
+    position: "static",
+  },
+  storyStickyCard: {
+    position: "sticky",
+    top: 96,
+    background: "linear-gradient(180deg, rgba(10,17,40,0.96), rgba(7,13,30,0.96))",
+    border: "1px solid rgba(255,255,255,0.08)",
+    borderRadius: 30,
+    padding: 22,
+    boxShadow: "0 24px 60px rgba(0,0,0,0.28)",
+  },
+  storyVisualHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+    gap: 14,
+    alignItems: "center",
+    marginBottom: 18,
+  },
+  storyVisualHeaderLeft: {
+    display: "flex",
+    gap: 12,
+    alignItems: "center",
+    flexWrap: "wrap",
+  },
+  storyVisualTag: {
+    display: "inline-block",
+    padding: "7px 12px",
+    borderRadius: 999,
+    background: "rgba(255,255,255,0.05)",
+    border: "1px solid rgba(255,255,255,0.08)",
+    color: "#dbe4ff",
+    fontSize: 12,
+    fontWeight: 800,
+    letterSpacing: 0.7,
+    textTransform: "uppercase",
+  },
+  storyVisualDots: {
+    display: "flex",
+    gap: 8,
+    alignItems: "center",
+  },
+  storyDot: {
+    width: 10,
+    height: 10,
+    borderRadius: "50%",
+    border: "none",
+    background: "rgba(255,255,255,0.18)",
+    cursor: "pointer",
+    padding: 0,
+  },
+  storyDotActive: {
+    background: "#ffffff",
+    transform: "scale(1.15)",
+  },
+  storyVisualStatus: {
+    color: "rgba(255,255,255,0.6)",
+    fontSize: 13,
+    fontWeight: 700,
+  },
+  storyImageFrame: {
+    borderRadius: 24,
+    overflow: "hidden",
+    border: "1px solid rgba(255,255,255,0.08)",
+    background: "rgba(255,255,255,0.02)",
+  },
+  storyImage: {
+    width: "100%",
+    height: "auto",
+    display: "block",
   },
 
   productStack: {
@@ -1281,17 +1562,17 @@ const styles: Record<string, React.CSSProperties> = {
   },
   productPanelLarge: {
     background: "linear-gradient(180deg, rgba(10,17,40,0.96), rgba(7,13,30,0.96))",
-    border: "1px solid rgba(92, 123, 255, 0.16)",
+    border: "1px solid rgba(255,255,255,0.08)",
     borderRadius: 30,
     padding: 26,
-    boxShadow: "0 0 32px rgba(40, 72, 210, 0.08)",
+    boxShadow: "0 18px 42px rgba(0,0,0,0.22)",
   },
   productPanelMedium: {
     background: "linear-gradient(180deg, rgba(10,17,40,0.96), rgba(7,13,30,0.96))",
-    border: "1px solid rgba(92, 123, 255, 0.16)",
+    border: "1px solid rgba(255,255,255,0.08)",
     borderRadius: 28,
     padding: 22,
-    boxShadow: "0 0 28px rgba(40, 72, 210, 0.08)",
+    boxShadow: "0 16px 36px rgba(0,0,0,0.2)",
   },
   dashboardShowcaseGrid: {
     display: "grid",
@@ -1308,9 +1589,9 @@ const styles: Record<string, React.CSSProperties> = {
     display: "inline-block",
     padding: "8px 12px",
     borderRadius: 999,
-    background: "rgba(49,90,255,0.14)",
-    border: "1px solid rgba(114,145,255,0.18)",
-    color: "#a7c0ff",
+    background: "rgba(255,255,255,0.05)",
+    border: "1px solid rgba(255,255,255,0.08)",
+    color: "#dbe4ff",
     fontSize: 12,
     fontWeight: 800,
     textTransform: "uppercase",
@@ -1319,28 +1600,28 @@ const styles: Record<string, React.CSSProperties> = {
   },
   productPanelTitle: {
     margin: "0 0 10px 0",
-    fontSize: "clamp(24px, 4vw, 36px)",
-    lineHeight: 1.1,
+    fontSize: "clamp(26px, 4vw, 38px)",
+    lineHeight: 1.08,
     fontWeight: 800,
     color: "#ffffff",
   },
   productPanelSmallTitle: {
     margin: "0 0 10px 0",
-    fontSize: "clamp(22px, 3.2vw, 30px)",
+    fontSize: "clamp(22px, 3vw, 30px)",
     lineHeight: 1.12,
     fontWeight: 800,
     color: "#ffffff",
   },
   productPanelText: {
     margin: 0,
-    color: "rgba(255,255,255,0.72)",
+    color: "rgba(255,255,255,0.7)",
     fontSize: 16,
     lineHeight: 1.8,
     maxWidth: 820,
   },
   productPanelSmallText: {
     margin: 0,
-    color: "rgba(255,255,255,0.72)",
+    color: "rgba(255,255,255,0.7)",
     fontSize: 15,
     lineHeight: 1.75,
     maxWidth: 720,
@@ -1348,9 +1629,9 @@ const styles: Record<string, React.CSSProperties> = {
   productImageFrame: {
     borderRadius: 24,
     overflow: "hidden",
-    border: "1px solid rgba(96, 126, 255, 0.16)",
+    border: "1px solid rgba(255,255,255,0.08)",
     background: "rgba(255,255,255,0.02)",
-    boxShadow: "0 20px 50px rgba(0,0,0,0.30)",
+    boxShadow: "0 18px 42px rgba(0,0,0,0.25)",
   },
   productImage: {
     width: "100%",
@@ -1367,19 +1648,18 @@ const styles: Record<string, React.CSSProperties> = {
     gridTemplateColumns: "1fr",
   },
   solutionCard: {
-    background: "linear-gradient(180deg, rgba(10,17,40,0.96), rgba(7,13,30,0.96))",
-    border: "1px solid rgba(92, 123, 255, 0.16)",
+    background: "linear-gradient(180deg, rgba(10,17,40,0.92), rgba(7,13,30,0.94))",
+    border: "1px solid rgba(255,255,255,0.08)",
     borderRadius: 24,
     padding: 24,
-    boxShadow: "0 0 24px rgba(40, 72, 210, 0.08)",
   },
   solutionBadge: {
     display: "inline-block",
     padding: "8px 12px",
     borderRadius: 999,
-    background: "rgba(49,90,255,0.14)",
-    border: "1px solid rgba(114,145,255,0.18)",
-    color: "#a7c0ff",
+    background: "rgba(255,255,255,0.05)",
+    border: "1px solid rgba(255,255,255,0.08)",
+    color: "#dbe4ff",
     fontSize: 12,
     fontWeight: 800,
     textTransform: "uppercase",
@@ -1389,8 +1669,8 @@ const styles: Record<string, React.CSSProperties> = {
   solutionTitle: {
     margin: "0 0 10px 0",
     color: "#ffffff",
-    fontSize: 26,
-    lineHeight: 1.12,
+    fontSize: 28,
+    lineHeight: 1.1,
     fontWeight: 800,
   },
   solutionTitleMobile: {
@@ -1400,7 +1680,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   solutionText: {
     margin: 0,
-    color: "rgba(255,255,255,0.70)",
+    color: "rgba(255,255,255,0.7)",
     fontSize: 15,
     lineHeight: 1.8,
   },
@@ -1414,8 +1694,8 @@ const styles: Record<string, React.CSSProperties> = {
     gridTemplateColumns: "1fr",
   },
   featureColumn: {
-    background: "linear-gradient(180deg, rgba(10,17,40,0.96), rgba(7,13,30,0.96))",
-    border: "1px solid rgba(92, 123, 255, 0.16)",
+    background: "linear-gradient(180deg, rgba(10,17,40,0.92), rgba(7,13,30,0.94))",
+    border: "1px solid rgba(255,255,255,0.08)",
     borderRadius: 24,
     padding: 24,
   },
@@ -1442,8 +1722,8 @@ const styles: Record<string, React.CSSProperties> = {
     gridTemplateColumns: "1fr",
   },
   workflowStep: {
-    background: "linear-gradient(180deg, rgba(10,17,40,0.96), rgba(7,13,30,0.96))",
-    border: "1px solid rgba(92, 123, 255, 0.16)",
+    background: "linear-gradient(180deg, rgba(10,17,40,0.92), rgba(7,13,30,0.94))",
+    border: "1px solid rgba(255,255,255,0.08)",
     borderRadius: 24,
     padding: 22,
   },
@@ -1454,12 +1734,11 @@ const styles: Record<string, React.CSSProperties> = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    background: "linear-gradient(135deg, #2551ff, #5c7dff)",
-    color: "#ffffff",
+    background: "#ffffff",
+    color: "#030712",
     fontWeight: 800,
     fontSize: 16,
     marginBottom: 16,
-    boxShadow: "0 0 18px rgba(68, 102, 255, 0.24)",
   },
   workflowStepTitle: {
     color: "#ffffff",
@@ -1468,14 +1747,14 @@ const styles: Record<string, React.CSSProperties> = {
     marginBottom: 10,
   },
   workflowStepText: {
-    color: "rgba(255,255,255,0.70)",
+    color: "rgba(255,255,255,0.7)",
     fontSize: 15,
     lineHeight: 1.75,
   },
 
   configurator: {
     display: "grid",
-    gridTemplateColumns: "1fr 0.9fr",
+    gridTemplateColumns: "1fr 0.92fr",
     gap: 22,
     alignItems: "start",
   },
@@ -1485,8 +1764,8 @@ const styles: Record<string, React.CSSProperties> = {
   configuratorLeft: {},
   configuratorRight: {},
   configCard: {
-    background: "linear-gradient(180deg, rgba(10,17,40,0.96), rgba(7,13,30,0.96))",
-    border: "1px solid rgba(92, 123, 255, 0.16)",
+    background: "linear-gradient(180deg, rgba(10,17,40,0.92), rgba(7,13,30,0.94))",
+    border: "1px solid rgba(255,255,255,0.08)",
     borderRadius: 28,
     padding: 24,
   },
@@ -1503,8 +1782,8 @@ const styles: Record<string, React.CSSProperties> = {
     boxSizing: "border-box",
     padding: "15px 16px",
     borderRadius: 14,
-    border: "1px solid rgba(113, 144, 255, 0.16)",
-    background: "rgba(255,255,255,0.05)",
+    border: "1px solid rgba(255,255,255,0.08)",
+    background: "rgba(255,255,255,0.04)",
     color: "#ffffff",
     fontSize: 15,
     outline: "none",
@@ -1518,8 +1797,8 @@ const styles: Record<string, React.CSSProperties> = {
     width: 48,
     height: 48,
     borderRadius: 14,
-    border: "1px solid rgba(113, 144, 255, 0.16)",
-    background: "rgba(49,90,255,0.14)",
+    border: "1px solid rgba(255,255,255,0.08)",
+    background: "rgba(255,255,255,0.05)",
     color: "#ffffff",
     fontSize: 24,
     fontWeight: 800,
@@ -1532,8 +1811,8 @@ const styles: Record<string, React.CSSProperties> = {
     boxSizing: "border-box",
     padding: "15px 16px",
     borderRadius: 14,
-    border: "1px solid rgba(113, 144, 255, 0.16)",
-    background: "rgba(255,255,255,0.05)",
+    border: "1px solid rgba(255,255,255,0.08)",
+    background: "rgba(255,255,255,0.04)",
     color: "#ffffff",
     fontSize: 16,
     outline: "none",
@@ -1550,7 +1829,7 @@ const styles: Record<string, React.CSSProperties> = {
     minWidth: "130px",
     padding: "14px 16px",
     borderRadius: 14,
-    border: "1px solid rgba(255,255,255,0.10)",
+    border: "1px solid rgba(255,255,255,0.08)",
     background: "rgba(255,255,255,0.04)",
     color: "#ffffff",
     fontSize: 15,
@@ -1558,20 +1837,20 @@ const styles: Record<string, React.CSSProperties> = {
     cursor: "pointer",
   },
   toggleButtonActive: {
-    background: "linear-gradient(135deg, #2551ff, #5c7dff)",
-    border: "1px solid rgba(114, 145, 255, 0.28)",
-    boxShadow: "0 0 18px rgba(68, 102, 255, 0.22)",
+    background: "#ffffff",
+    border: "1px solid rgba(255,255,255,0.16)",
+    color: "#030712",
   },
 
   quoteCard: {
-    background: "linear-gradient(180deg, rgba(12,22,54,0.98), rgba(8,14,33,0.98))",
-    border: "1px solid rgba(98, 129, 255, 0.18)",
+    background: "linear-gradient(180deg, rgba(10,17,40,0.96), rgba(7,13,30,0.96))",
+    border: "1px solid rgba(255,255,255,0.08)",
     borderRadius: 28,
     padding: 24,
-    boxShadow: "0 0 30px rgba(48, 82, 214, 0.10)",
+    boxShadow: "0 18px 38px rgba(0,0,0,0.2)",
   },
   quoteTopLabel: {
-    color: "#8fb1ff",
+    color: "#94a3b8",
     fontSize: 13,
     fontWeight: 800,
     textTransform: "uppercase",
@@ -1599,11 +1878,11 @@ const styles: Record<string, React.CSSProperties> = {
     marginBottom: 18,
     borderRadius: 22,
     padding: 20,
-    background: "linear-gradient(135deg, rgba(37,81,255,0.24), rgba(92,125,255,0.18))",
-    border: "1px solid rgba(114,145,255,0.18)",
+    background: "rgba(255,255,255,0.05)",
+    border: "1px solid rgba(255,255,255,0.08)",
   },
   quoteTotalLabel: {
-    color: "#a9c0ff",
+    color: "#cbd5e1",
     fontSize: 13,
     fontWeight: 800,
     textTransform: "uppercase",
@@ -1627,8 +1906,8 @@ const styles: Record<string, React.CSSProperties> = {
     padding: "15px 18px",
     borderRadius: 14,
     border: "none",
-    background: "linear-gradient(135deg, #2551ff, #5c7dff)",
-    color: "#ffffff",
+    background: "#ffffff",
+    color: "#030712",
     fontSize: 15,
     fontWeight: 800,
     cursor: "pointer",
@@ -1648,19 +1927,19 @@ const styles: Record<string, React.CSSProperties> = {
 
   contactShell: {
     background: "linear-gradient(180deg, rgba(10,17,40,0.96), rgba(7,13,30,0.96))",
-    border: "1px solid rgba(92, 123, 255, 0.16)",
+    border: "1px solid rgba(255,255,255,0.08)",
     borderRadius: 32,
     padding: 34,
     textAlign: "center",
-    boxShadow: "0 0 34px rgba(40,72,210,0.08)",
+    boxShadow: "0 18px 36px rgba(0,0,0,0.18)",
   },
   contactBadge: {
     display: "inline-block",
     padding: "9px 14px",
     borderRadius: 999,
-    background: "rgba(49,90,255,0.14)",
-    border: "1px solid rgba(114,145,255,0.18)",
-    color: "#9fb8ff",
+    background: "rgba(255,255,255,0.05)",
+    border: "1px solid rgba(255,255,255,0.08)",
+    color: "#dbe4ff",
     fontSize: 13,
     fontWeight: 700,
     marginBottom: 18,
@@ -1689,8 +1968,8 @@ const styles: Record<string, React.CSSProperties> = {
     marginBottom: 22,
   },
   contactPrimaryButton: {
-    background: "linear-gradient(135deg, #2551ff, #5c7dff)",
-    color: "#ffffff",
+    background: "#ffffff",
+    color: "#030712",
     padding: "15px 20px",
     borderRadius: 14,
     textDecoration: "none",
@@ -1714,21 +1993,82 @@ const styles: Record<string, React.CSSProperties> = {
     justifyContent: "center",
     gap: 10,
     flexWrap: "wrap",
+    marginBottom: 26,
   },
   contactMetaChip: {
     padding: "10px 14px",
     borderRadius: 999,
-    background: "rgba(49,90,255,0.15)",
-    color: "#b8d0ff",
+    background: "rgba(255,255,255,0.05)",
+    color: "#dbe4ff",
     fontSize: 13,
     fontWeight: 700,
-    border: "1px solid rgba(89,128,255,0.18)",
+    border: "1px solid rgba(255,255,255,0.08)",
+  },
+  contactFormWrap: {
+    maxWidth: 640,
+    margin: "0 auto",
+    textAlign: "left",
+    background: "rgba(255,255,255,0.03)",
+    border: "1px solid rgba(255,255,255,0.08)",
+    borderRadius: 26,
+    padding: 22,
+  },
+  contactFormHeader: {
+    marginBottom: 18,
+  },
+
+  formLabel: {
+    margin: 0,
+    color: "#cbd5e1",
+    fontSize: 13,
+    fontWeight: 800,
+    textTransform: "uppercase",
+    letterSpacing: 0.8,
+  },
+  formTitle: {
+    margin: "10px 0 8px 0",
+    fontSize: 28,
+    lineHeight: 1.1,
+    fontWeight: 800,
+    color: "#ffffff",
+  },
+  formText: {
+    margin: 0,
+    color: "rgba(255,255,255,0.72)",
+    fontSize: 14,
+    lineHeight: 1.7,
+  },
+  form: {
+    display: "grid",
+    gap: 12,
+  },
+  input: {
+    width: "100%",
+    boxSizing: "border-box",
+    padding: "15px 16px",
+    borderRadius: 14,
+    border: "1px solid rgba(255,255,255,0.08)",
+    background: "rgba(255,255,255,0.05)",
+    color: "#ffffff",
+    fontSize: 15,
+    outline: "none",
+  },
+  formSubmitButton: {
+    marginTop: 4,
+    padding: "15px 18px",
+    borderRadius: 14,
+    border: "none",
+    background: "#ffffff",
+    color: "#030712",
+    fontSize: 15,
+    fontWeight: 800,
+    cursor: "pointer",
   },
 
   modalOverlay: {
     position: "fixed",
     inset: 0,
-    background: "rgba(2, 6, 23, 0.76)",
+    background: "rgba(2, 6, 23, 0.78)",
     zIndex: 9999,
     display: "flex",
     alignItems: "center",
@@ -1741,16 +2081,16 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: 26,
     padding: 24,
     background: "linear-gradient(180deg, rgba(10,17,40,0.98), rgba(7,13,30,0.98))",
-    border: "1px solid rgba(92, 123, 255, 0.16)",
-    boxShadow: "0 0 32px rgba(40,72,210,0.14)",
+    border: "1px solid rgba(255,255,255,0.08)",
+    boxShadow: "0 0 32px rgba(0,0,0,0.24)",
   },
   modalBadge: {
     display: "inline-block",
     padding: "8px 12px",
     borderRadius: 999,
-    background: "rgba(49,90,255,0.14)",
-    border: "1px solid rgba(114,145,255,0.18)",
-    color: "#9fb8ff",
+    background: "rgba(255,255,255,0.05)",
+    border: "1px solid rgba(255,255,255,0.08)",
+    color: "#dbe4ff",
     fontSize: 12,
     fontWeight: 800,
     textTransform: "uppercase",
@@ -1780,7 +2120,7 @@ const styles: Record<string, React.CSSProperties> = {
     boxSizing: "border-box",
     padding: "15px 16px",
     borderRadius: 14,
-    border: "1px solid rgba(113, 144, 255, 0.16)",
+    border: "1px solid rgba(255,255,255,0.08)",
     background: "rgba(255,255,255,0.05)",
     color: "#ffffff",
     fontSize: 15,
@@ -1798,8 +2138,8 @@ const styles: Record<string, React.CSSProperties> = {
     padding: "15px 18px",
     borderRadius: 14,
     border: "none",
-    background: "linear-gradient(135deg, #2551ff, #5c7dff)",
-    color: "#ffffff",
+    background: "#ffffff",
+    color: "#030712",
     fontSize: 15,
     fontWeight: 800,
     cursor: "pointer",
