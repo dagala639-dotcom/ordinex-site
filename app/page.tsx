@@ -27,7 +27,7 @@ const STORY_STEPS: StoryStep[] = [
     eyebrow: "Waiter Order Flow",
     title: "Take orders instantly from the table.",
     text:
-      "Staff browse menu items, add notes, adjust quantity, and send the order in seconds from a clean tablet-first interface.",
+      "Staff browse menu items, add notes, adjust quantity, and send the order in seconds from a clean tablet-first interface designed for speed, clarity, and low-error service during busy hours.",
     image: "/images/orders.png",
     alt: "Ordinex waiter order screen",
   },
@@ -36,7 +36,7 @@ const STORY_STEPS: StoryStep[] = [
     eyebrow: "Kitchen Display System",
     title: "Orders move straight to the kitchen.",
     text:
-      "Kitchen teams see new, preparing, and ready orders in one live screen so production stays fast, organized, and easy to track.",
+      "Kitchen teams see new, preparing, and ready orders in one live screen so production stays fast, organised, and easy to track without relying on verbal communication or handwritten tickets.",
     image: "/images/kitchen-screen.png",
     alt: "Ordinex kitchen display screen",
   },
@@ -45,7 +45,7 @@ const STORY_STEPS: StoryStep[] = [
     eyebrow: "Cashier Control",
     title: "Keep billing and payment under tight control.",
     text:
-      "Cashiers manage bills, confirm payment methods, and maintain shift visibility from a central screen built for busy operations.",
+      "Cashiers manage bills, confirm payment methods, track totals, and maintain better payment accountability from a central screen built for busy day-to-day operations.",
     image: "/images/cashier-screen.png",
     alt: "Ordinex cashier screen",
   },
@@ -54,7 +54,7 @@ const STORY_STEPS: StoryStep[] = [
     eyebrow: "Business Visibility",
     title: "See what is happening across the business.",
     text:
-      "Managers and owners get clean operational visibility across sales, staff activity, pending items, and business performance.",
+      "Managers and owners get clean operational visibility across sales, staff activity, pending items, and performance trends from one connected reporting layer.",
     image: "/images/owner-dashboard.png",
     alt: "Ordinex owner dashboard",
   },
@@ -85,28 +85,23 @@ export default function HomePage() {
 
   useEffect(() => {
     const handleScroll = () => {
-      const elements = STORY_STEPS.map((step) =>
-        document.getElementById(`story-step-${step.id}`)
+      const sections = STORY_STEPS.map((step) =>
+        document.getElementById(`story-trigger-${step.id}`)
       ).filter(Boolean) as HTMLElement[];
 
-      if (!elements.length) return;
+      if (!sections.length) return;
 
-      const viewportMiddle = window.innerHeight * 0.45;
-      let bestIndex = 0;
-      let bestDistance = Number.POSITIVE_INFINITY;
+      let currentIndex = 0;
+      const viewportPoint = window.innerHeight * 0.42;
 
-      elements.forEach((element, index) => {
-        const rect = element.getBoundingClientRect();
-        const elementMiddle = rect.top + rect.height / 2;
-        const distance = Math.abs(elementMiddle - viewportMiddle);
-
-        if (distance < bestDistance) {
-          bestDistance = distance;
-          bestIndex = index;
+      sections.forEach((section, index) => {
+        const rect = section.getBoundingClientRect();
+        if (rect.top <= viewportPoint) {
+          currentIndex = index;
         }
       });
 
-      setActiveStory(bestIndex);
+      setActiveStory(currentIndex);
     };
 
     handleScroll();
@@ -203,14 +198,17 @@ Location: ${location}
   function handleTabletInputChange(value: string) {
     const numeric = Number(value);
     if (Number.isNaN(numeric)) return;
+
     if (numeric < 1) {
       setTabletCount(1);
       return;
     }
+
     if (numeric > 20) {
       setTabletCount(20);
       return;
     }
+
     setTabletCount(numeric);
   }
 
@@ -453,50 +451,26 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
         <div style={styles.sectionInnerWide}>
           <div
             style={{
-              ...styles.sectionHeader,
-              ...(isMobile ? styles.sectionHeaderMobile : {}),
+              ...styles.sectionHeaderCenter,
+              ...(isMobile ? styles.sectionHeaderCenterMobile : {}),
             }}
           >
             <div>
               <div style={styles.sectionEyebrow}>Product Story</div>
-              <h2 style={styles.sectionTitle}>See how Ordinex works from order to oversight</h2>
+              <h2 style={styles.sectionTitleCenter}>
+                See how Ordinex works from order to oversight
+              </h2>
             </div>
-            <p style={styles.sectionCopy}>
-              Scroll through the live flow. Orders are captured, routed, paid,
-              and monitored in one connected operational system.
+            <p style={styles.sectionCopyCenter}>
+              Start with the product visual, then scroll through the detailed
+              story of how orders are captured, routed, paid, and monitored.
             </p>
           </div>
 
-          <div
-            style={{
-              ...styles.storyShell,
-              ...(isMobile ? styles.storyShellMobile : {}),
-            }}
-          >
-            <div style={{ ...styles.storyCopyRail, ...(isMobile ? styles.storyCopyRailMobile : {}) }}>
-              {STORY_STEPS.map((step, index) => {
-                const isActive = activeStory === index;
-
-                return (
-                  <div
-                    key={step.id}
-                    id={`story-step-${step.id}`}
-                    style={{
-                      ...styles.storyTextBlock,
-                      ...(isActive ? styles.storyTextBlockActive : {}),
-                    }}
-                  >
-                    <div style={styles.storyEyebrow}>{step.eyebrow}</div>
-                    <h3 style={styles.storyTitle}>{step.title}</h3>
-                    <p style={styles.storyText}>{step.text}</p>
-                  </div>
-                );
-              })}
-            </div>
-
-            <div style={{ ...styles.storyVisualRail, ...(isMobile ? styles.storyVisualRailMobile : {}) }}>
-              <div style={styles.storyStickyCard}>
-                <div style={styles.storyVisualHeader}>
+          <div style={styles.storyExperience}>
+            <div style={styles.storyStickyVisualShell}>
+              <div style={styles.storyStickyCardLarge}>
+                <div style={styles.storyVisualHeaderLarge}>
                   <div style={styles.storyVisualHeaderLeft}>
                     <div style={styles.storyVisualTag}>Ordinex Workflow</div>
                     <div style={styles.storyVisualDots}>
@@ -505,9 +479,12 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
                           key={step.id}
                           type="button"
                           onClick={() => {
-                            const element = document.getElementById(`story-step-${step.id}`);
+                            const element = document.getElementById(`story-trigger-${step.id}`);
                             if (element) {
-                              element.scrollIntoView({ behavior: "smooth", block: "center" });
+                              element.scrollIntoView({
+                                behavior: "smooth",
+                                block: "center",
+                              });
                             }
                           }}
                           style={{
@@ -519,21 +496,61 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
                       ))}
                     </div>
                   </div>
+
                   <div style={styles.storyVisualStatus}>
                     {activeStory + 1}/{STORY_STEPS.length}
                   </div>
                 </div>
 
-                <div style={styles.storyImageFrame}>
+                <div style={styles.storyImageFrameLarge}>
                   <Image
                     src={STORY_STEPS[activeStory].image}
                     alt={STORY_STEPS[activeStory].alt}
                     width={1600}
                     height={900}
-                    style={styles.storyImage}
+                    style={styles.storyImageLarge}
                   />
                 </div>
               </div>
+            </div>
+
+            <div style={styles.storyDescriptions}>
+              {STORY_STEPS.map((step, index) => {
+                const isActive = activeStory === index;
+
+                return (
+                  <div
+                    key={step.id}
+                    id={`story-trigger-${step.id}`}
+                    style={{
+                      ...styles.storyDescriptionBlock,
+                      ...(isActive ? styles.storyDescriptionBlockActive : {}),
+                    }}
+                  >
+                    <div style={styles.storyDescriptionInner}>
+                      <div style={styles.storyEyebrow}>{step.eyebrow}</div>
+                      <h3 style={styles.storyTitle}>{step.title}</h3>
+                      <p style={styles.storyText}>{step.text}</p>
+
+                      <div style={styles.storySupportGrid}>
+                        <div style={styles.storySupportCard}>
+                          <div style={styles.storySupportTitle}>Operational value</div>
+                          <div style={styles.storySupportText}>
+                            Faster workflows with cleaner staff interaction and better control at the point of action.
+                          </div>
+                        </div>
+
+                        <div style={styles.storySupportCard}>
+                          <div style={styles.storySupportTitle}>What this improves</div>
+                          <div style={styles.storySupportText}>
+                            Better speed, clearer accountability, fewer manual errors, and a more connected business flow.
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -988,23 +1005,22 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
 
             <div style={styles.contactButtons}>
               <a href="mailto:hello@ordinex.co" style={styles.contactPrimaryButton}>
-                Email Us
+                <span style={styles.contactButtonLabel}>Email Us</span>
+                <span style={styles.contactButtonSubtext}>hello@ordinex.co</span>
               </a>
+
               <a href="tel:0769753581" style={styles.contactSecondaryButton}>
-                Call Us
+                <span style={styles.contactButtonLabel}>Call Us</span>
+                <span style={styles.contactButtonSubtext}>0769753581</span>
               </a>
+
               <a
                 href="https://wa.me/254769753581"
                 style={styles.contactSecondaryButton}
               >
-                WhatsApp Us
+                <span style={styles.contactButtonLabel}>WhatsApp Us</span>
+                <span style={styles.contactButtonSubtext}>0769753581</span>
               </a>
-            </div>
-
-            <div style={styles.contactMeta}>
-              <div style={styles.contactMetaChip}>Phone: 0769753581</div>
-              <div style={styles.contactMetaChip}>WhatsApp: 0769753581</div>
-              <div style={styles.contactMetaChip}>Email: hello@ordinex.co</div>
             </div>
 
             <div style={styles.contactFormWrap}>
@@ -1402,6 +1418,14 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: "start",
     gap: 14,
   },
+  sectionHeaderCenter: {
+    maxWidth: 940,
+    margin: "0 auto 42px auto",
+    textAlign: "center",
+  },
+  sectionHeaderCenterMobile: {
+    marginBottom: 28,
+  },
   sectionEyebrow: {
     color: "#94a3b8",
     fontSize: 12,
@@ -1419,6 +1443,15 @@ const styles: Record<string, React.CSSProperties> = {
     color: "#ffffff",
     maxWidth: 800,
   },
+  sectionTitleCenter: {
+    margin: "0 auto",
+    fontSize: "clamp(30px, 4.6vw, 54px)",
+    lineHeight: 1.06,
+    letterSpacing: -1.4,
+    fontWeight: 800,
+    color: "#ffffff",
+    maxWidth: 900,
+  },
   sectionCopy: {
     margin: 0,
     maxWidth: 470,
@@ -1426,77 +1459,33 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: 16,
     lineHeight: 1.8,
   },
+  sectionCopyCenter: {
+    margin: "18px auto 0 auto",
+    maxWidth: 700,
+    color: "rgba(255,255,255,0.68)",
+    fontSize: 16,
+    lineHeight: 1.8,
+  },
 
-  storyShell: {
-    display: "grid",
-    gridTemplateColumns: "0.82fr 1.18fr",
-    gap: 36,
-    alignItems: "start",
-  },
-  storyShellMobile: {
-    gridTemplateColumns: "1fr",
-    gap: 24,
-  },
-  storyCopyRail: {
-    display: "grid",
-    gap: 36,
-  },
-  storyCopyRailMobile: {
-    gap: 18,
-  },
-  storyTextBlock: {
-    minHeight: "54vh",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    opacity: 0.34,
-    transform: "translateY(18px)",
-    transition: "all 260ms ease",
-    paddingRight: 18,
-  },
-  storyTextBlockActive: {
-    opacity: 1,
-    transform: "translateY(0)",
-  },
-  storyEyebrow: {
-    color: "#8ea4ff",
-    fontSize: 12,
-    fontWeight: 800,
-    textTransform: "uppercase",
-    letterSpacing: 0.9,
-    marginBottom: 14,
-  },
-  storyTitle: {
-    margin: "0 0 14px 0",
-    fontSize: "clamp(28px, 4vw, 44px)",
-    lineHeight: 1.08,
-    letterSpacing: -1.1,
-    fontWeight: 800,
-    color: "#ffffff",
-  },
-  storyText: {
-    margin: 0,
-    color: "rgba(255,255,255,0.7)",
-    fontSize: 17,
-    lineHeight: 1.85,
-    maxWidth: 520,
-  },
-  storyVisualRail: {
+  storyExperience: {
     position: "relative",
   },
-  storyVisualRailMobile: {
-    position: "static",
-  },
-  storyStickyCard: {
+  storyStickyVisualShell: {
     position: "sticky",
-    top: 96,
+    top: 86,
+    zIndex: 2,
+    marginBottom: 40,
+  },
+  storyStickyCardLarge: {
     background: "linear-gradient(180deg, rgba(10,17,40,0.96), rgba(7,13,30,0.96))",
     border: "1px solid rgba(255,255,255,0.08)",
-    borderRadius: 30,
-    padding: 22,
-    boxShadow: "0 24px 60px rgba(0,0,0,0.28)",
+    borderRadius: 34,
+    padding: 24,
+    boxShadow: "0 28px 80px rgba(0,0,0,0.3)",
+    maxWidth: 1120,
+    margin: "0 auto",
   },
-  storyVisualHeader: {
+  storyVisualHeaderLarge: {
     display: "flex",
     justifyContent: "space-between",
     gap: 14,
@@ -1544,16 +1533,79 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: 13,
     fontWeight: 700,
   },
-  storyImageFrame: {
-    borderRadius: 24,
+  storyImageFrameLarge: {
+    borderRadius: 26,
     overflow: "hidden",
     border: "1px solid rgba(255,255,255,0.08)",
     background: "rgba(255,255,255,0.02)",
+    minHeight: "auto",
   },
-  storyImage: {
+  storyImageLarge: {
     width: "100%",
     height: "auto",
     display: "block",
+  },
+
+  storyDescriptions: {
+    display: "grid",
+    gap: 10,
+    maxWidth: 1120,
+    margin: "0 auto",
+  },
+  storyDescriptionBlock: {
+    minHeight: "85vh",
+    display: "flex",
+    alignItems: "flex-end",
+    opacity: 0.45,
+    transition: "opacity 240ms ease, transform 240ms ease",
+    transform: "translateY(18px)",
+  },
+  storyDescriptionBlockActive: {
+    opacity: 1,
+    transform: "translateY(0)",
+  },
+  storyDescriptionInner: {
+    width: "100%",
+    maxWidth: 760,
+    padding: "14px 4px 30px 4px",
+  },
+  storyTitle: {
+    margin: "0 0 14px 0",
+    fontSize: "clamp(32px, 4vw, 52px)",
+    lineHeight: 1.04,
+    letterSpacing: -1.2,
+    fontWeight: 800,
+    color: "#ffffff",
+  },
+  storyText: {
+    margin: 0,
+    color: "rgba(255,255,255,0.74)",
+    fontSize: 18,
+    lineHeight: 1.85,
+    maxWidth: 760,
+  },
+  storySupportGrid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+    gap: 16,
+    marginTop: 28,
+  },
+  storySupportCard: {
+    background: "rgba(255,255,255,0.03)",
+    border: "1px solid rgba(255,255,255,0.08)",
+    borderRadius: 20,
+    padding: 18,
+  },
+  storySupportTitle: {
+    color: "#ffffff",
+    fontSize: 14,
+    fontWeight: 700,
+    marginBottom: 10,
+  },
+  storySupportText: {
+    color: "rgba(255,255,255,0.66)",
+    fontSize: 14,
+    lineHeight: 1.7,
   },
 
   productStack: {
@@ -1960,49 +2012,55 @@ const styles: Record<string, React.CSSProperties> = {
     lineHeight: 1.8,
   },
   contactButtons: {
-    display: "flex",
-    justifyContent: "center",
-    gap: 12,
-    flexWrap: "wrap",
+    display: "grid",
+    gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+    gap: 14,
     marginTop: 26,
-    marginBottom: 22,
+    marginBottom: 28,
   },
   contactPrimaryButton: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    gap: 8,
     background: "#ffffff",
     color: "#030712",
-    padding: "15px 20px",
-    borderRadius: 14,
+    padding: "18px 20px",
+    borderRadius: 18,
     textDecoration: "none",
     fontWeight: 800,
     fontSize: 15,
-    minWidth: "160px",
+    minHeight: 88,
+    border: "1px solid rgba(255,255,255,0.16)",
   },
   contactSecondaryButton: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    gap: 8,
     background: "rgba(255,255,255,0.04)",
     color: "#ffffff",
-    padding: "15px 20px",
-    borderRadius: 14,
+    padding: "18px 20px",
+    borderRadius: 18,
     textDecoration: "none",
     fontWeight: 700,
     fontSize: 15,
     border: "1px solid rgba(255,255,255,0.12)",
-    minWidth: "160px",
+    minHeight: 88,
   },
-  contactMeta: {
-    display: "flex",
-    justifyContent: "center",
-    gap: 10,
-    flexWrap: "wrap",
-    marginBottom: 26,
+  contactButtonLabel: {
+    display: "block",
+    fontSize: 18,
+    fontWeight: 800,
+    lineHeight: 1.2,
   },
-  contactMetaChip: {
-    padding: "10px 14px",
-    borderRadius: 999,
-    background: "rgba(255,255,255,0.05)",
-    color: "#dbe4ff",
-    fontSize: 13,
-    fontWeight: 700,
-    border: "1px solid rgba(255,255,255,0.08)",
+  contactButtonSubtext: {
+    display: "block",
+    fontSize: 14,
+    fontWeight: 600,
+    opacity: 0.82,
+    lineHeight: 1.4,
+    wordBreak: "break-word",
   },
   contactFormWrap: {
     maxWidth: 640,
