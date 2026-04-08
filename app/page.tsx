@@ -16,18 +16,24 @@ type StoryStep = {
   id: string;
   eyebrow: string;
   title: string;
-  text: string;
+  description: string;
+  details: string[];
   image: string;
   alt: string;
 };
 
 const STORY_STEPS: StoryStep[] = [
   {
-    id: "waiter",
+    id: "orders",
     eyebrow: "Waiter Order Flow",
     title: "Take orders instantly from the table.",
-    text:
-      "Staff browse menu items, add notes, adjust quantity, and send the order in seconds from a clean tablet-first interface designed for speed, clarity, and low-error service during busy hours.",
+    description:
+      "Ordinex gives staff a clean tablet-first ordering flow where menu browsing, quantity control, notes, and order submission happen in seconds. The interface is designed to reduce delay, reduce confusion, and help service stay fast during busy periods.",
+    details: [
+      "Clear item selection with quantity and notes",
+      "Fast order creation without paper or back-and-forth",
+      "Built for real floor service speed",
+    ],
     image: "/images/orders.png",
     alt: "Ordinex waiter order screen",
   },
@@ -35,8 +41,13 @@ const STORY_STEPS: StoryStep[] = [
     id: "kitchen",
     eyebrow: "Kitchen Display System",
     title: "Orders move straight to the kitchen.",
-    text:
-      "Kitchen teams see new, preparing, and ready orders in one live screen so production stays fast, organised, and easy to track without relying on verbal communication or handwritten tickets.",
+    description:
+      "Once the order is sent, the kitchen receives it immediately in a structured live workflow. Teams can see new, preparing, and ready orders in one place, making communication cleaner and production easier to track.",
+    details: [
+      "Live order movement from floor to kitchen",
+      "Clear preparation status in one view",
+      "Less shouting, less missed orders, better coordination",
+    ],
     image: "/images/kitchen-screen.png",
     alt: "Ordinex kitchen display screen",
   },
@@ -44,8 +55,13 @@ const STORY_STEPS: StoryStep[] = [
     id: "cashier",
     eyebrow: "Cashier Control",
     title: "Keep billing and payment under tight control.",
-    text:
-      "Cashiers manage bills, confirm payment methods, track totals, and maintain better payment accountability from a central screen built for busy day-to-day operations.",
+    description:
+      "Cashiers manage bills, track payment status, confirm collection methods, and maintain daily visibility from a central billing screen. This helps businesses tighten money control while keeping the customer payment flow simple.",
+    details: [
+      "Paid and unpaid bill visibility",
+      "Better cashier-side payment accountability",
+      "Stronger control over business collections",
+    ],
     image: "/images/cashier-screen.png",
     alt: "Ordinex cashier screen",
   },
@@ -53,8 +69,13 @@ const STORY_STEPS: StoryStep[] = [
     id: "owner",
     eyebrow: "Business Visibility",
     title: "See what is happening across the business.",
-    text:
-      "Managers and owners get clean operational visibility across sales, staff activity, pending items, and performance trends from one connected reporting layer.",
+    description:
+      "Managers and owners get a cleaner operational view of sales, staff activity, pending actions, and overall business performance. Ordinex does not stop at the transaction point — it continues into visibility and control.",
+    details: [
+      "Performance visibility beyond the counter",
+      "Better oversight across roles and workflows",
+      "A stronger operational view for decision-making",
+    ],
     image: "/images/owner-dashboard.png",
     alt: "Ordinex owner dashboard",
   },
@@ -85,23 +106,23 @@ export default function HomePage() {
 
   useEffect(() => {
     const handleScroll = () => {
-      const sections = STORY_STEPS.map((step) =>
+      const triggers = STORY_STEPS.map((step) =>
         document.getElementById(`story-trigger-${step.id}`)
       ).filter(Boolean) as HTMLElement[];
 
-      if (!sections.length) return;
+      if (!triggers.length) return;
 
-      let currentIndex = 0;
-      const viewportPoint = window.innerHeight * 0.42;
+      const marker = window.innerHeight * 0.52;
+      let nextIndex = 0;
 
-      sections.forEach((section, index) => {
-        const rect = section.getBoundingClientRect();
-        if (rect.top <= viewportPoint) {
-          currentIndex = index;
+      triggers.forEach((item, index) => {
+        const rect = item.getBoundingClientRect();
+        if (rect.top <= marker) {
+          nextIndex = index;
         }
       });
 
-      setActiveStory(currentIndex);
+      setActiveStory(nextIndex);
     };
 
     handleScroll();
@@ -187,31 +208,6 @@ Location: ${location}
     window.location.href = `mailto:hello@ordinex.co?subject=${subject}&body=${body}`;
   }
 
-  function increaseTablets() {
-    setTabletCount((prev) => Math.min(prev + 1, 20));
-  }
-
-  function decreaseTablets() {
-    setTabletCount((prev) => Math.max(prev - 1, 1));
-  }
-
-  function handleTabletInputChange(value: string) {
-    const numeric = Number(value);
-    if (Number.isNaN(numeric)) return;
-
-    if (numeric < 1) {
-      setTabletCount(1);
-      return;
-    }
-
-    if (numeric > 20) {
-      setTabletCount(20);
-      return;
-    }
-
-    setTabletCount(numeric);
-  }
-
   function handleSendRealQuote(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -244,6 +240,22 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
     window.location.href = `mailto:hello@ordinex.co?subject=${subject}&body=${body}`;
   }
 
+  function increaseTablets() {
+    setTabletCount((prev) => Math.min(prev + 1, 20));
+  }
+
+  function decreaseTablets() {
+    setTabletCount((prev) => Math.max(prev - 1, 1));
+  }
+
+  function handleTabletInputChange(value: string) {
+    const numeric = Number(value);
+    if (Number.isNaN(numeric)) return;
+    if (numeric < 1) return setTabletCount(1);
+    if (numeric > 20) return setTabletCount(20);
+    setTabletCount(numeric);
+  }
+
   return (
     <main style={styles.page}>
       {showQuoteForm ? (
@@ -252,8 +264,8 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
             <div style={styles.modalBadge}>Get Real Quote</div>
             <h3 style={styles.modalTitle}>Send your package to Ordinex</h3>
             <p style={styles.modalText}>
-              Add your details and your selected setup will be prepared in an
-              email draft to our team.
+              Add your details and your selected setup will be prepared in an email
+              draft to our team.
             </p>
 
             <form style={styles.modalForm} onSubmit={handleSendRealQuote}>
@@ -305,7 +317,6 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
         <div style={styles.heroOverlay} />
         <div style={styles.heroGlowOne} />
         <div style={styles.heroGlowTwo} />
-        <div style={styles.heroGrid} />
 
         <nav style={{ ...styles.nav, ...(isMobile ? styles.navMobile : {}) }}>
           <div style={styles.brandWrap}>
@@ -367,8 +378,8 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
 
             <p style={styles.heroText}>
               Ordinex brings together ordering, kitchen flow, cashier control,
-              fuel sales capture, shift visibility, and business reporting in
-              one premium operational platform.
+              fuel sales capture, shift visibility, and business reporting in one
+              premium operational platform.
             </p>
 
             <div style={styles.heroActions}>
@@ -386,172 +397,99 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
                 Estimate Your Setup
               </button>
             </div>
-
-            <div
-              style={{
-                ...styles.heroMiniStats,
-                ...(isMobile ? styles.heroMiniStatsMobile : {}),
-              }}
-            >
-              <div style={styles.heroMiniStat}>
-                <div style={styles.heroMiniLabel}>Floor Operations</div>
-                <div style={styles.heroMiniValue}>Waiter tablets and table flow</div>
-              </div>
-              <div style={styles.heroMiniStat}>
-                <div style={styles.heroMiniLabel}>Kitchen Coordination</div>
-                <div style={styles.heroMiniValue}>Live KDS status and production flow</div>
-              </div>
-              <div style={styles.heroMiniStat}>
-                <div style={styles.heroMiniLabel}>Business Visibility</div>
-                <div style={styles.heroMiniValue}>Cashier, manager, owner, and fuel reporting</div>
-              </div>
-            </div>
           </div>
 
-          <div style={styles.heroShowcaseShell}>
-            <div style={styles.heroShowcaseCard}>
-              <div style={styles.heroShowcaseHeader}>
-                <div>
-                  <div style={styles.heroShowcaseTag}>Live Product</div>
-                  <h3 style={styles.heroShowcaseTitle}>See how the system works</h3>
-                </div>
-                <div style={styles.heroStatusPill}>Realtime</div>
-              </div>
-
-              <div style={styles.heroShowcaseImageWrap}>
-                <Image
-                  src="/images/orders.png"
-                  alt="Ordinex waiter order screen"
-                  width={1600}
-                  height={900}
-                  style={styles.heroShowcaseImage}
-                />
-              </div>
-
-              <div style={styles.heroShowcaseFooter}>
-                <div style={styles.heroShowcaseFooterCard}>
-                  <div style={styles.heroShowcaseFooterLabel}>Orders</div>
-                  <div style={styles.heroShowcaseFooterText}>
-                    Staff take orders with a clean, tablet-first workflow.
-                  </div>
-                </div>
-                <div style={styles.heroShowcaseFooterCard}>
-                  <div style={styles.heroShowcaseFooterLabel}>Kitchen</div>
-                  <div style={styles.heroShowcaseFooterText}>
-                    Orders move directly to production with live status updates.
-                  </div>
-                </div>
-              </div>
+          <div style={styles.heroAssetWrap}>
+            <div style={styles.heroAssetCard}>
+              <Image
+                src="/images/orders.png"
+                alt="Ordinex waiter order screen"
+                width={1600}
+                height={900}
+                style={styles.heroAssetImage}
+              />
             </div>
           </div>
         </div>
       </section>
 
-      <section style={styles.section} id="product-story">
-        <div style={styles.sectionInnerWide}>
-          <div
-            style={{
-              ...styles.sectionHeaderCenter,
-              ...(isMobile ? styles.sectionHeaderCenterMobile : {}),
-            }}
-          >
-            <div>
-              <div style={styles.sectionEyebrow}>Product Story</div>
-              <h2 style={styles.sectionTitleCenter}>
-                See how Ordinex works from order to oversight
-              </h2>
-            </div>
-            <p style={styles.sectionCopyCenter}>
-              Start with the product visual, then scroll through the detailed
-              story of how orders are captured, routed, paid, and monitored.
+      <section style={styles.storySection} id="product-story">
+        <div style={styles.storySectionInner}>
+          <div style={styles.storyIntro}>
+            <div style={styles.sectionEyebrow}>Product Story</div>
+            <h2 style={styles.storyIntroTitle}>
+              See how Ordinex works from order to oversight
+            </h2>
+            <p style={styles.storyIntroText}>
+              A product-led view of the workflow. The image leads first. As you
+              continue scrolling, the explanation expands around the active screen.
             </p>
           </div>
 
-          <div style={styles.storyExperience}>
-            <div style={styles.storyStickyVisualShell}>
-              <div style={styles.storyStickyCardLarge}>
-                <div style={styles.storyVisualHeaderLarge}>
-                  <div style={styles.storyVisualHeaderLeft}>
-                    <div style={styles.storyVisualTag}>Ordinex Workflow</div>
-                    <div style={styles.storyVisualDots}>
-                      {STORY_STEPS.map((step, index) => (
-                        <button
-                          key={step.id}
-                          type="button"
-                          onClick={() => {
-                            const element = document.getElementById(`story-trigger-${step.id}`);
-                            if (element) {
-                              element.scrollIntoView({
-                                behavior: "smooth",
-                                block: "center",
-                              });
-                            }
-                          }}
-                          style={{
-                            ...styles.storyDot,
-                            ...(activeStory === index ? styles.storyDotActive : {}),
-                          }}
-                          aria-label={`Go to ${step.title}`}
-                        />
-                      ))}
-                    </div>
-                  </div>
-
-                  <div style={styles.storyVisualStatus}>
-                    {activeStory + 1}/{STORY_STEPS.length}
-                  </div>
-                </div>
-
-                <div style={styles.storyImageFrameLarge}>
-                  <Image
-                    src={STORY_STEPS[activeStory].image}
-                    alt={STORY_STEPS[activeStory].alt}
-                    width={1600}
-                    height={900}
-                    style={styles.storyImageLarge}
+          <div style={styles.storyStickyStage}>
+            <div style={styles.storyStageTop}>
+              <div style={styles.storyVisualTag}>Ordinex Workflow</div>
+              <div style={styles.storyVisualDots}>
+                {STORY_STEPS.map((step, index) => (
+                  <button
+                    key={step.id}
+                    type="button"
+                    onClick={() => {
+                      const element = document.getElementById(`story-trigger-${step.id}`);
+                      if (element) {
+                        element.scrollIntoView({ behavior: "smooth", block: "center" });
+                      }
+                    }}
+                    style={{
+                      ...styles.storyDot,
+                      ...(activeStory === index ? styles.storyDotActive : {}),
+                    }}
+                    aria-label={`Go to ${step.title}`}
                   />
-                </div>
+                ))}
               </div>
             </div>
 
-            <div style={styles.storyDescriptions}>
-              {STORY_STEPS.map((step, index) => {
-                const isActive = activeStory === index;
+            <div style={styles.storyStageImageFrame}>
+              <Image
+                src={STORY_STEPS[activeStory].image}
+                alt={STORY_STEPS[activeStory].alt}
+                width={1600}
+                height={900}
+                style={styles.storyStageImage}
+              />
+            </div>
+          </div>
 
-                return (
-                  <div
-                    key={step.id}
-                    id={`story-trigger-${step.id}`}
-                    style={{
-                      ...styles.storyDescriptionBlock,
-                      ...(isActive ? styles.storyDescriptionBlockActive : {}),
-                    }}
-                  >
-                    <div style={styles.storyDescriptionInner}>
-                      <div style={styles.storyEyebrow}>{step.eyebrow}</div>
-                      <h3 style={styles.storyTitle}>{step.title}</h3>
-                      <p style={styles.storyText}>{step.text}</p>
+          <div style={styles.storyFlowRail}>
+            {STORY_STEPS.map((step, index) => {
+              const isActive = activeStory === index;
 
-                      <div style={styles.storySupportGrid}>
-                        <div style={styles.storySupportCard}>
-                          <div style={styles.storySupportTitle}>Operational value</div>
-                          <div style={styles.storySupportText}>
-                            Faster workflows with cleaner staff interaction and better control at the point of action.
-                          </div>
+              return (
+                <div
+                  key={step.id}
+                  id={`story-trigger-${step.id}`}
+                  style={{
+                    ...styles.storyDescriptionSection,
+                    ...(isActive ? styles.storyDescriptionSectionActive : {}),
+                  }}
+                >
+                  <div style={styles.storyDescriptionShell}>
+                    <div style={styles.storyDescriptionEyebrow}>{step.eyebrow}</div>
+                    <h3 style={styles.storyDescriptionTitle}>{step.title}</h3>
+                    <p style={styles.storyDescriptionText}>{step.description}</p>
+
+                    <div style={styles.storyBulletGrid}>
+                      {step.details.map((detail) => (
+                        <div key={detail} style={styles.storyBulletCard}>
+                          {detail}
                         </div>
-
-                        <div style={styles.storySupportCard}>
-                          <div style={styles.storySupportTitle}>What this improves</div>
-                          <div style={styles.storySupportText}>
-                            Better speed, clearer accountability, fewer manual errors, and a more connected business flow.
-                          </div>
-                        </div>
-                      </div>
+                      ))}
                     </div>
                   </div>
-                );
-              })}
-            </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -569,8 +507,8 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
               <h2 style={styles.sectionTitle}>Built for different roles across the business</h2>
             </div>
             <p style={styles.sectionCopy}>
-              Beyond the core flow, Ordinex gives each role the tools they need
-              to operate with speed, clarity, and control.
+              Beyond the core operational flow, Ordinex supports managers, owners,
+              and fuel attendants with focused role-based interfaces.
             </p>
           </div>
 
@@ -642,8 +580,7 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
                     </h3>
                     <p style={styles.productPanelSmallText}>
                       View business performance, top-selling items, operational
-                      trends, and commercial visibility from one premium summary
-                      screen.
+                      trends, and commercial visibility from one premium summary screen.
                     </p>
                   </div>
                 </div>
@@ -688,28 +625,18 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
           >
             <div style={styles.solutionCard}>
               <div style={styles.solutionBadge}>Restaurants & Cafés</div>
-              <h3
-                style={{
-                  ...styles.solutionTitle,
-                  ...(isMobile ? styles.solutionTitleMobile : {}),
-                }}
-              >
+              <h3 style={{ ...styles.solutionTitle, ...(isMobile ? styles.solutionTitleMobile : {}) }}>
                 Waiter → Kitchen → Cashier
               </h3>
               <p style={styles.solutionText}>
-                Waiters create orders from tablets, kitchen receives them
-                instantly, and cashiers maintain payment control from one system.
+                Waiters create orders from tablets, kitchen receives them instantly,
+                and cashiers maintain payment control from one system.
               </p>
             </div>
 
             <div style={styles.solutionCard}>
               <div style={styles.solutionBadge}>Bars & Lounges</div>
-              <h3
-                style={{
-                  ...styles.solutionTitle,
-                  ...(isMobile ? styles.solutionTitleMobile : {}),
-                }}
-              >
+              <h3 style={{ ...styles.solutionTitle, ...(isMobile ? styles.solutionTitleMobile : {}) }}>
                 Fast service with tighter billing visibility
               </h3>
               <p style={styles.solutionText}>
@@ -720,12 +647,7 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
 
             <div style={styles.solutionCard}>
               <div style={styles.solutionBadge}>Hotels & Hospitality</div>
-              <h3
-                style={{
-                  ...styles.solutionTitle,
-                  ...(isMobile ? styles.solutionTitleMobile : {}),
-                }}
-              >
+              <h3 style={{ ...styles.solutionTitle, ...(isMobile ? styles.solutionTitleMobile : {}) }}>
                 Connected service and management control
               </h3>
               <p style={styles.solutionText}>
@@ -736,12 +658,7 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
 
             <div style={styles.solutionCard}>
               <div style={styles.solutionBadge}>Fuel Stations</div>
-              <h3
-                style={{
-                  ...styles.solutionTitle,
-                  ...(isMobile ? styles.solutionTitleMobile : {}),
-                }}
-              >
+              <h3 style={{ ...styles.solutionTitle, ...(isMobile ? styles.solutionTitleMobile : {}) }}>
                 Attendant → Shift summary → Management
               </h3>
               <p style={styles.solutionText}>
@@ -1085,6 +1002,19 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
           </div>
         </div>
       </section>
+
+      <style jsx global>{`
+        html {
+          scroll-behavior: smooth;
+        }
+
+        @media (max-width: 900px) {
+          #product-story .storyStickyVisualShell {
+            position: relative !important;
+            top: auto !important;
+          }
+        }
+      `}</style>
     </main>
   );
 }
@@ -1092,18 +1022,17 @@ Estimated Total: KES ${estimate.total.toLocaleString()}
 const styles: Record<string, React.CSSProperties> = {
   page: {
     margin: 0,
-    background: "#030712",
+    background: "#020617",
     color: "#ffffff",
     fontFamily:
       'Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-    scrollBehavior: "smooth",
   },
 
   hero: {
     position: "relative",
     minHeight: "100vh",
     overflow: "hidden",
-    background: "#030712",
+    background: "#020617",
   },
   heroVideo: {
     position: "absolute",
@@ -1116,42 +1045,33 @@ const styles: Record<string, React.CSSProperties> = {
     position: "absolute",
     inset: 0,
     background:
-      "linear-gradient(180deg, rgba(3,7,18,0.54) 0%, rgba(3,7,18,0.84) 55%, rgba(3,7,18,0.98) 100%)",
+      "linear-gradient(180deg, rgba(2,6,23,0.56) 0%, rgba(2,6,23,0.82) 56%, rgba(2,6,23,0.96) 100%)",
   },
   heroGlowOne: {
     position: "absolute",
     width: 520,
     height: 520,
     borderRadius: "50%",
-    background: "rgba(47, 101, 255, 0.12)",
-    filter: "blur(130px)",
-    top: -120,
-    left: -120,
+    background: "rgba(59, 130, 246, 0.12)",
+    filter: "blur(140px)",
+    top: -140,
+    left: -140,
   },
   heroGlowTwo: {
     position: "absolute",
-    width: 420,
-    height: 420,
+    width: 460,
+    height: 460,
     borderRadius: "50%",
-    background: "rgba(41, 84, 255, 0.08)",
-    filter: "blur(120px)",
-    bottom: -120,
+    background: "rgba(99, 102, 241, 0.08)",
+    filter: "blur(140px)",
+    bottom: -160,
     right: -120,
-  },
-  heroGrid: {
-    position: "absolute",
-    inset: 0,
-    backgroundImage:
-      "linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)",
-    backgroundSize: "46px 46px",
-    pointerEvents: "none",
-    maskImage: "linear-gradient(to bottom, rgba(0,0,0,0.72), transparent)",
   },
 
   nav: {
     position: "relative",
     zIndex: 2,
-    maxWidth: 1280,
+    maxWidth: 1320,
     margin: "0 auto",
     padding: "24px 20px",
     display: "flex",
@@ -1163,7 +1083,6 @@ const styles: Record<string, React.CSSProperties> = {
   navMobile: {
     padding: "18px 16px",
     gap: 12,
-    alignItems: "center",
   },
   brandWrap: {
     display: "flex",
@@ -1173,14 +1092,12 @@ const styles: Record<string, React.CSSProperties> = {
     width: "auto",
     height: "44px",
     objectFit: "contain",
-    borderRadius: "10px",
+    borderRadius: 10,
   },
   navLinks: {
     display: "flex",
-    gap: 22,
     alignItems: "center",
-    flexWrap: "wrap",
-    justifyContent: "center",
+    gap: 22,
   },
   navLink: {
     color: "rgba(255,255,255,0.76)",
@@ -1190,12 +1107,12 @@ const styles: Record<string, React.CSSProperties> = {
   },
   navButton: {
     background: "#ffffff",
-    color: "#030712",
-    border: "1px solid rgba(255,255,255,0.15)",
-    padding: "12px 18px",
+    color: "#020617",
+    border: "none",
     borderRadius: 999,
-    fontWeight: 700,
+    padding: "12px 18px",
     fontSize: 14,
+    fontWeight: 700,
     cursor: "pointer",
   },
   navButtonMobile: {
@@ -1205,19 +1122,19 @@ const styles: Record<string, React.CSSProperties> = {
   heroInner: {
     position: "relative",
     zIndex: 2,
-    maxWidth: 1280,
+    maxWidth: 1320,
     margin: "0 auto",
     minHeight: "calc(100vh - 90px)",
     display: "grid",
-    gridTemplateColumns: "1.05fr 0.95fr",
-    gap: 36,
+    gridTemplateColumns: "1fr 1fr",
+    gap: 32,
     alignItems: "center",
-    padding: "20px 20px 88px",
+    padding: "24px 20px 90px",
   },
   heroInnerMobile: {
     gridTemplateColumns: "1fr",
-    padding: "18px 16px 56px",
     gap: 26,
+    padding: "18px 16px 56px",
   },
   heroCopy: {
     maxWidth: 720,
@@ -1227,7 +1144,7 @@ const styles: Record<string, React.CSSProperties> = {
     padding: "8px 14px",
     borderRadius: 999,
     background: "rgba(255,255,255,0.05)",
-    border: "1px solid rgba(255,255,255,0.08)",
+    border: "1px solid rgba(255,255,255,0.1)",
     color: "#cbd5e1",
     fontSize: 13,
     fontWeight: 700,
@@ -1235,279 +1152,131 @@ const styles: Record<string, React.CSSProperties> = {
   },
   heroTitle: {
     margin: "0 0 16px 0",
-    fontSize: "clamp(38px, 7vw, 78px)",
-    lineHeight: 1.02,
-    letterSpacing: -2.2,
+    fontSize: "clamp(40px, 7vw, 84px)",
+    lineHeight: 1.01,
+    letterSpacing: -2.4,
     fontWeight: 800,
-    color: "#ffffff",
     maxWidth: 860,
   },
   heroTitleMobile: {
-    fontSize: "42px",
-    lineHeight: 1.04,
+    fontSize: 42,
     letterSpacing: -1.4,
+    lineHeight: 1.04,
   },
   heroText: {
     margin: 0,
+    maxWidth: 640,
     color: "rgba(255,255,255,0.72)",
     fontSize: "clamp(16px, 2vw, 19px)",
     lineHeight: 1.8,
-    maxWidth: 650,
   },
   heroActions: {
     display: "flex",
     gap: 12,
     flexWrap: "wrap",
     marginTop: 28,
-    marginBottom: 32,
   },
   heroPrimaryButton: {
-    padding: "15px 20px",
+    padding: "15px 22px",
     borderRadius: 14,
     border: "none",
     background: "#ffffff",
-    color: "#030712",
-    fontSize: 15,
+    color: "#020617",
     fontWeight: 800,
+    fontSize: 15,
     cursor: "pointer",
-    minWidth: "190px",
+    minWidth: 190,
   },
   heroSecondaryButton: {
-    padding: "15px 20px",
+    padding: "15px 22px",
     borderRadius: 14,
-    border: "1px solid rgba(255,255,255,0.12)",
+    border: "1px solid rgba(255,255,255,0.14)",
     background: "rgba(255,255,255,0.04)",
     color: "#ffffff",
-    fontSize: 15,
     fontWeight: 700,
+    fontSize: 15,
     cursor: "pointer",
-    minWidth: "170px",
+    minWidth: 170,
   },
-  heroMiniStats: {
-    display: "grid",
-    gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-    gap: 16,
-  },
-  heroMiniStatsMobile: {
-    gridTemplateColumns: "1fr",
-  },
-  heroMiniStat: {
-    padding: "0 8px 0 0",
-  },
-  heroMiniLabel: {
-    color: "#ffffff",
-    fontSize: 15,
-    fontWeight: 700,
-    marginBottom: 8,
-  },
-  heroMiniValue: {
-    color: "rgba(255,255,255,0.62)",
-    fontSize: 14,
-    lineHeight: 1.65,
-  },
-
-  heroShowcaseShell: {
+  heroAssetWrap: {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
   },
-  heroShowcaseCard: {
+  heroAssetCard: {
     width: "100%",
-    maxWidth: 620,
-    background: "linear-gradient(180deg, rgba(12,18,35,0.9), rgba(8,12,24,0.92))",
-    border: "1px solid rgba(255,255,255,0.08)",
-    borderRadius: 32,
-    padding: 22,
-    boxShadow: "0 24px 70px rgba(0,0,0,0.34)",
-    backdropFilter: "blur(16px)",
-  },
-  heroShowcaseHeader: {
-    display: "flex",
-    justifyContent: "space-between",
-    gap: 14,
-    alignItems: "center",
-    marginBottom: 18,
-  },
-  heroShowcaseTag: {
-    display: "inline-block",
-    padding: "7px 12px",
-    borderRadius: 999,
-    background: "rgba(255,255,255,0.05)",
-    border: "1px solid rgba(255,255,255,0.08)",
-    color: "#b8c6ff",
-    fontSize: 12,
-    fontWeight: 800,
-    letterSpacing: 0.7,
-    textTransform: "uppercase",
-    marginBottom: 10,
-  },
-  heroShowcaseTitle: {
-    margin: 0,
-    color: "#ffffff",
-    fontSize: 24,
-    fontWeight: 800,
-    lineHeight: 1.1,
-  },
-  heroStatusPill: {
-    padding: "10px 14px",
-    borderRadius: 999,
-    background: "rgba(34,197,94,0.14)",
-    border: "1px solid rgba(34,197,94,0.16)",
-    color: "#86efac",
-    fontSize: 12,
-    fontWeight: 800,
-    whiteSpace: "nowrap",
-  },
-  heroShowcaseImageWrap: {
-    borderRadius: 24,
+    maxWidth: 700,
+    borderRadius: 34,
     overflow: "hidden",
+    background: "rgba(255,255,255,0.04)",
     border: "1px solid rgba(255,255,255,0.08)",
-    background: "rgba(255,255,255,0.02)",
-    boxShadow: "0 20px 44px rgba(0,0,0,0.28)",
+    boxShadow: "0 28px 90px rgba(0,0,0,0.38)",
   },
-  heroShowcaseImage: {
+  heroAssetImage: {
     width: "100%",
     height: "auto",
     display: "block",
   },
-  heroShowcaseFooter: {
-    display: "grid",
-    gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-    gap: 12,
-    marginTop: 14,
-  },
-  heroShowcaseFooterCard: {
-    background: "rgba(255,255,255,0.03)",
-    border: "1px solid rgba(255,255,255,0.05)",
-    borderRadius: 18,
-    padding: 14,
-  },
-  heroShowcaseFooterLabel: {
-    color: "#ffffff",
-    fontSize: 14,
-    fontWeight: 700,
-    marginBottom: 8,
-  },
-  heroShowcaseFooterText: {
-    color: "rgba(255,255,255,0.64)",
-    fontSize: 13,
-    lineHeight: 1.6,
-  },
 
-  section: {
-    background: "#030712",
-    padding: "110px 16px",
+  storySection: {
+    background: "#020617",
+    padding: "130px 16px 80px 16px",
   },
-  sectionInner: {
-    maxWidth: 1180,
+  storySectionInner: {
+    maxWidth: 1380,
     margin: "0 auto",
   },
-  sectionInnerWide: {
-    maxWidth: 1320,
-    margin: "0 auto",
-  },
-  sectionHeader: {
-    display: "flex",
-    justifyContent: "space-between",
-    gap: 24,
-    alignItems: "end",
-    flexWrap: "wrap",
-    marginBottom: 36,
-  },
-  sectionHeaderMobile: {
-    alignItems: "start",
-    gap: 14,
-  },
-  sectionHeaderCenter: {
-    maxWidth: 940,
-    margin: "0 auto 42px auto",
+  storyIntro: {
+    maxWidth: 860,
+    margin: "0 auto 40px auto",
     textAlign: "center",
   },
-  sectionHeaderCenterMobile: {
-    marginBottom: 28,
-  },
-  sectionEyebrow: {
-    color: "#94a3b8",
-    fontSize: 12,
-    fontWeight: 800,
-    textTransform: "uppercase",
-    letterSpacing: 0.9,
-    marginBottom: 12,
-  },
-  sectionTitle: {
+  storyIntroTitle: {
     margin: 0,
-    fontSize: "clamp(30px, 4.6vw, 54px)",
-    lineHeight: 1.06,
-    letterSpacing: -1.4,
+    fontSize: "clamp(34px, 5vw, 64px)",
+    lineHeight: 1.04,
+    letterSpacing: -1.6,
     fontWeight: 800,
     color: "#ffffff",
-    maxWidth: 800,
   },
-  sectionTitleCenter: {
-    margin: "0 auto",
-    fontSize: "clamp(30px, 4.6vw, 54px)",
-    lineHeight: 1.06,
-    letterSpacing: -1.4,
-    fontWeight: 800,
-    color: "#ffffff",
-    maxWidth: 900,
-  },
-  sectionCopy: {
-    margin: 0,
-    maxWidth: 470,
-    color: "rgba(255,255,255,0.68)",
-    fontSize: 16,
-    lineHeight: 1.8,
-  },
-  sectionCopyCenter: {
+  storyIntroText: {
     margin: "18px auto 0 auto",
-    maxWidth: 700,
-    color: "rgba(255,255,255,0.68)",
-    fontSize: 16,
+    maxWidth: 720,
+    fontSize: 17,
     lineHeight: 1.8,
+    color: "rgba(255,255,255,0.68)",
   },
 
-  storyExperience: {
-    position: "relative",
-  },
-  storyStickyVisualShell: {
+  storyStickyStage: {
     position: "sticky",
-    top: 86,
-    zIndex: 2,
-    marginBottom: 40,
-  },
-  storyStickyCardLarge: {
-    background: "linear-gradient(180deg, rgba(10,17,40,0.96), rgba(7,13,30,0.96))",
+    top: 72,
+    zIndex: 3,
+    maxWidth: 1240,
+    margin: "0 auto 24px auto",
+    background: "linear-gradient(180deg, rgba(11,18,32,0.96), rgba(7,12,24,0.98))",
     border: "1px solid rgba(255,255,255,0.08)",
     borderRadius: 34,
-    padding: 24,
-    boxShadow: "0 28px 80px rgba(0,0,0,0.3)",
-    maxWidth: 1120,
-    margin: "0 auto",
+    padding: 22,
+    boxShadow: "0 30px 100px rgba(0,0,0,0.36)",
   },
-  storyVisualHeaderLarge: {
+  storyStageTop: {
     display: "flex",
     justifyContent: "space-between",
-    gap: 14,
-    alignItems: "center",
-    marginBottom: 18,
-  },
-  storyVisualHeaderLeft: {
-    display: "flex",
     gap: 12,
     alignItems: "center",
+    marginBottom: 18,
     flexWrap: "wrap",
   },
   storyVisualTag: {
     display: "inline-block",
-    padding: "7px 12px",
+    padding: "8px 12px",
     borderRadius: 999,
     background: "rgba(255,255,255,0.05)",
     border: "1px solid rgba(255,255,255,0.08)",
     color: "#dbe4ff",
     fontSize: 12,
     fontWeight: 800,
-    letterSpacing: 0.7,
+    letterSpacing: 0.8,
     textTransform: "uppercase",
   },
   storyVisualDots: {
@@ -1526,86 +1295,129 @@ const styles: Record<string, React.CSSProperties> = {
   },
   storyDotActive: {
     background: "#ffffff",
-    transform: "scale(1.15)",
+    transform: "scale(1.16)",
   },
-  storyVisualStatus: {
-    color: "rgba(255,255,255,0.6)",
-    fontSize: 13,
-    fontWeight: 700,
-  },
-  storyImageFrameLarge: {
-    borderRadius: 26,
+  storyStageImageFrame: {
+    borderRadius: 28,
     overflow: "hidden",
     border: "1px solid rgba(255,255,255,0.08)",
     background: "rgba(255,255,255,0.02)",
-    minHeight: "auto",
   },
-  storyImageLarge: {
+  storyStageImage: {
     width: "100%",
     height: "auto",
     display: "block",
   },
 
-  storyDescriptions: {
-    display: "grid",
-    gap: 10,
-    maxWidth: 1120,
+  storyFlowRail: {
+    maxWidth: 1240,
     margin: "0 auto",
+    display: "grid",
+    gap: 0,
   },
-  storyDescriptionBlock: {
-    minHeight: "85vh",
+  storyDescriptionSection: {
+    minHeight: "90vh",
     display: "flex",
     alignItems: "flex-end",
-    opacity: 0.45,
-    transition: "opacity 240ms ease, transform 240ms ease",
+    opacity: 0.4,
     transform: "translateY(18px)",
+    transition: "opacity 240ms ease, transform 240ms ease",
   },
-  storyDescriptionBlockActive: {
+  storyDescriptionSectionActive: {
     opacity: 1,
     transform: "translateY(0)",
   },
-  storyDescriptionInner: {
+  storyDescriptionShell: {
     width: "100%",
-    maxWidth: 760,
-    padding: "14px 4px 30px 4px",
+    maxWidth: 860,
+    padding: "34px 6px 38px 6px",
   },
-  storyTitle: {
-    margin: "0 0 14px 0",
-    fontSize: "clamp(32px, 4vw, 52px)",
+  storyDescriptionEyebrow: {
+    color: "#93c5fd",
+    fontSize: 12,
+    fontWeight: 800,
+    textTransform: "uppercase",
+    letterSpacing: 0.9,
+    marginBottom: 14,
+  },
+  storyDescriptionTitle: {
+    margin: "0 0 16px 0",
+    fontSize: "clamp(34px, 5vw, 58px)",
     lineHeight: 1.04,
-    letterSpacing: -1.2,
+    letterSpacing: -1.4,
     fontWeight: 800,
     color: "#ffffff",
   },
-  storyText: {
+  storyDescriptionText: {
     margin: 0,
     color: "rgba(255,255,255,0.74)",
     fontSize: 18,
-    lineHeight: 1.85,
-    maxWidth: 760,
+    lineHeight: 1.9,
+    maxWidth: 820,
   },
-  storySupportGrid: {
+  storyBulletGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-    gap: 16,
-    marginTop: 28,
+    gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+    gap: 14,
+    marginTop: 26,
   },
-  storySupportCard: {
+  storyBulletCard: {
     background: "rgba(255,255,255,0.03)",
     border: "1px solid rgba(255,255,255,0.08)",
-    borderRadius: 20,
-    padding: 18,
+    borderRadius: 18,
+    padding: 16,
+    color: "rgba(255,255,255,0.72)",
+    fontSize: 14,
+    lineHeight: 1.65,
   },
-  storySupportTitle: {
+
+  section: {
+    background: "#020617",
+    padding: "110px 16px",
+  },
+  sectionInner: {
+    maxWidth: 1200,
+    margin: "0 auto",
+  },
+  sectionInnerWide: {
+    maxWidth: 1320,
+    margin: "0 auto",
+  },
+  sectionHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "end",
+    gap: 24,
+    flexWrap: "wrap",
+    marginBottom: 36,
+  },
+  sectionHeaderMobile: {
+    alignItems: "start",
+    gap: 14,
+  },
+  sectionEyebrow: {
+    color: "#94a3b8",
+    fontSize: 12,
+    fontWeight: 800,
+    textTransform: "uppercase",
+    letterSpacing: 0.9,
+    marginBottom: 12,
+  },
+  sectionTitle: {
+    margin: 0,
+    fontSize: "clamp(30px, 4.6vw, 54px)",
+    lineHeight: 1.06,
+    letterSpacing: -1.3,
+    fontWeight: 800,
     color: "#ffffff",
-    fontSize: 14,
-    fontWeight: 700,
-    marginBottom: 10,
+    maxWidth: 820,
   },
-  storySupportText: {
-    color: "rgba(255,255,255,0.66)",
-    fontSize: 14,
-    lineHeight: 1.7,
+  sectionCopy: {
+    margin: 0,
+    maxWidth: 470,
+    color: "rgba(255,255,255,0.68)",
+    fontSize: 16,
+    lineHeight: 1.8,
   },
 
   productStack: {
@@ -1787,7 +1599,7 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: "center",
     justifyContent: "center",
     background: "#ffffff",
-    color: "#030712",
+    color: "#020617",
     fontWeight: 800,
     fontSize: 16,
     marginBottom: 16,
@@ -1891,7 +1703,7 @@ const styles: Record<string, React.CSSProperties> = {
   toggleButtonActive: {
     background: "#ffffff",
     border: "1px solid rgba(255,255,255,0.16)",
-    color: "#030712",
+    color: "#020617",
   },
 
   quoteCard: {
@@ -1959,7 +1771,7 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: 14,
     border: "none",
     background: "#ffffff",
-    color: "#030712",
+    color: "#020617",
     fontSize: 15,
     fontWeight: 800,
     cursor: "pointer",
@@ -2024,7 +1836,7 @@ const styles: Record<string, React.CSSProperties> = {
     justifyContent: "center",
     gap: 8,
     background: "#ffffff",
-    color: "#030712",
+    color: "#020617",
     padding: "18px 20px",
     borderRadius: 18,
     textDecoration: "none",
@@ -2117,7 +1929,7 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: 14,
     border: "none",
     background: "#ffffff",
-    color: "#030712",
+    color: "#020617",
     fontSize: 15,
     fontWeight: 800,
     cursor: "pointer",
@@ -2197,7 +2009,7 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: 14,
     border: "none",
     background: "#ffffff",
-    color: "#030712",
+    color: "#020617",
     fontSize: 15,
     fontWeight: 800,
     cursor: "pointer",
